@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="dream_analysis_pending">Analiziniz hazırlanıyor...</string>
+    <string name="dream_analysis_failed">Rüya analizi başarısız oldu.</string>
+    <string name="dream_analysis_retry">Tekrar Dene</string>
+    <string name="dream_analysis_title">Yapay Zeka Analizi</string>
+</resources>

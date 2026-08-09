@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Lunosfer</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_explore">Explore</string>
+    <string name="nav_vision">Vision</string>
+    <string name="nav_messages">Messages</string>
+    <string name="nav_create">Create</string>
+    <string name="nav_new_dream">Log a Dream</string>
+    <string name="nav_new_vision">New Vision</string>
+    <string name="nav_login">Log In</string>
+    <string name="nav_notifications">Notifications</string>
+    <string name="auth_title">Welcome Back</string>
+    <string name="auth_register_title">Create Your Account</string>
+    <string name="auth_email">Email</string>
+    <string name="auth_password">Password</string>
+    <string name="auth_username">Username</string>
+    <string name="auth_username_required">Username is required.</string>
+    <string name="auth_login">Log In</string>
+    <string name="auth_register">Register</string>
+    <string name="auth_loading">Loading...</string>
+    <string name="auth_success">Registration successful! Please check your email.</string>
+    <string name="auth_no_account">Don\'t have an account? Register</string>
+    <string name="auth_has_account">Already have an account? Log in</string>
+    <string name="action_login_google">Continue with Google</string>
+    <string name="action_login_github">Continue with GitHub</string>
+<string name="dream_addTitle">Share Your Dream</string><string name="dream_placeholder">Write your dream in as much detail as you remember...</string><string name="dream_location">Location</string><string name="dream_public">Public</string><string name="dream_friends">Friends only</string><string name="dream_private">Private</string><string name="dream_shareInFeed">Share in public feed</string><string name="dream_submit">Submit Dream</string><string name="dream_validationContent">Please enter your dream text.</string><string name="dream_createFailed">Dream could not be created.</string><string name="dream_unknownLocation">Unknown location</string><string name="dream_emotion_joy">Joy</string><string name="dream_emotion_peace">Peace</string><string name="dream_emotion_love">Love</string><string name="dream_emotion_hope">Hope</string><string name="dream_emotion_awe">Awe</string><string name="dream_emotion_surprise">Surprise</string><string name="dream_emotion_curiosity">Curiosity</string><string name="dream_emotion_confusion">Confusion</string><string name="dream_emotion_fear">Fear</string><string name="dream_emotion_anxiety">Anxiety</string><string name="dream_emotion_sadness">Sadness</string><string name="dream_emotion_loneliness">Loneliness</string><string name="dream_emotion_anger">Anger</string><string name="dream_emotion_shame">Shame</string><string name="dream_emotion_disgust">Disgust</string><string name="dream_emotion_relief">Relief</string>    <string name="dream_analysis_pending">Your analysis is being prepared...</string>
+    <string name="dream_analysis_failed">Dream analysis failed.</string>
+    <string name="dream_analysis_retry">Retry</string>
+    <string name="dream_analysis_title">AI Analysis</string>
+</resources>

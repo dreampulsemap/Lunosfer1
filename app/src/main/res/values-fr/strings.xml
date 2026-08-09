@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Lunosfer</string>
+    <string name="nav_home">Accueil</string>
+    <string name="nav_explore">Explorer</string>
+    <string name="nav_vision">Vision</string>
+    <string name="nav_messages">Messages</string>
+    <string name="nav_create">Créer</string>
+    <string name="nav_new_dream">Enregistrer un rêve</string>
+    <string name="nav_new_vision">Nouvelle vision</string>
+    <string name="nav_login">Se connecter</string>
+    <string name="nav_notifications">Notifications</string>
+    <string name="auth_title">Bon retour</string>
+    <string name="auth_register_title">Créer un compte</string>
+    <string name="auth_email">E-mail</string>
+    <string name="auth_password">Mot de passe</string>
+    <string name="auth_username">Nom d\'utilisateur</string>
+    <string name="auth_username_required">Le nom d\'utilisateur est obligatoire.</string>
+    <string name="auth_login">Se connecter</string>
+    <string name="auth_register">S\'inscrire</string>
+    <string name="auth_loading">Chargement...</string>
+    <string name="auth_success">Inscription réussie ! Vérifie ton e-mail.</string>
+    <string name="auth_no_account">Pas de compte ? Inscris-toi</string>
+    <string name="auth_has_account">Tu as déjà un compte ? Connecte-toi</string>
+<string name="dream_addTitle">Partage ton rêve</string><string name="dream_placeholder">Écris ton rêve avec autant de détails que tu t’en souviens...</string><string name="dream_location">Lieu</string><string name="dream_public">Public</string><string name="dream_friends">Amis uniquement</string><string name="dream_private">Privé</string><string name="dream_shareInFeed">Partager dans le fil public</string><string name="dream_submit">Envoyer le rêve</string><string name="dream_validationContent">Merci de saisir le texte de ton rêve.</string><string name="dream_createFailed">Le rêve n’a pas pu être créé.</string><string name="dream_unknownLocation">Lieu inconnu</string><string name="dream_emotion_joy">Joie</string><string name="dream_emotion_peace">Paix</string><string name="dream_emotion_love">Amour</string><string name="dream_emotion_hope">Espoir</string><string name="dream_emotion_awe">Émerveillement</string><string name="dream_emotion_surprise">Surprise</string><string name="dream_emotion_curiosity">Curiosité</string><string name="dream_emotion_confusion">Confusion</string><string name="dream_emotion_fear">Peur</string><string name="dream_emotion_anxiety">Anxiété</string><string name="dream_emotion_sadness">Tristesse</string><string name="dream_emotion_loneliness">Solitude</string><string name="dream_emotion_anger">Colère</string><string name="dream_emotion_shame">Honte</string><string name="dream_emotion_disgust">Dégoût</string><string name="dream_emotion_relief">Soulagement</string></resources>

@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Lunosfer</string>
+    <string name="nav_home">Главная</string>
+    <string name="nav_explore">Обзор</string>
+    <string name="nav_vision">Видение</string>
+    <string name="nav_messages">Сообщения</string>
+    <string name="nav_create">Создать</string>
+    <string name="nav_new_dream">Записать сон</string>
+    <string name="nav_new_vision">Новое видение</string>
+    <string name="nav_login">Войти</string>
+    <string name="nav_notifications">Уведомления</string>
+    <string name="auth_title">С возвращением</string>
+    <string name="auth_register_title">Создать аккаунт</string>
+    <string name="auth_email">Эл. почта</string>
+    <string name="auth_password">Пароль</string>
+    <string name="auth_username">Имя пользователя</string>
+    <string name="auth_username_required">Имя пользователя обязательно.</string>
+    <string name="auth_login">Войти</string>
+    <string name="auth_register">Зарегистрироваться</string>
+    <string name="auth_loading">Загрузка...</string>
+    <string name="auth_success">Регистрация успешна! Проверьте вашу почту.</string>
+    <string name="auth_no_account">Нет аккаунта? Зарегистрируйтесь</string>
+    <string name="auth_has_account">Уже есть аккаунт? Войти</string>
+<string name="dream_addTitle">Поделитесь своим сном</string><string name="dream_placeholder">Опишите свой сон как можно подробнее...</string><string name="dream_location">Местоположение</string><string name="dream_public">Публично</string><string name="dream_friends">Только для друзей</string><string name="dream_private">Приватно</string><string name="dream_shareInFeed">Поделиться в публичной ленте</string><string name="dream_submit">Отправить сон</string><string name="dream_validationContent">Пожалуйста, введите текст сна.</string><string name="dream_createFailed">Не удалось создать сон.</string><string name="dream_unknownLocation">Неизвестное местоположение</string><string name="dream_emotion_joy">Радость</string><string name="dream_emotion_peace">Покой</string><string name="dream_emotion_love">Любовь</string><string name="dream_emotion_hope">Надежда</string><string name="dream_emotion_awe">Восхищение</string><string name="dream_emotion_surprise">Удивление</string><string name="dream_emotion_curiosity">Любопытство</string><string name="dream_emotion_confusion">Замешательство</string><string name="dream_emotion_fear">Страх</string><string name="dream_emotion_anxiety">Тревога</string><string name="dream_emotion_sadness">Грусть</string><string name="dream_emotion_loneliness">Одиночество</string><string name="dream_emotion_anger">Гнев</string><string name="dream_emotion_shame">Стыд</string><string name="dream_emotion_disgust">Отвращение</string><string name="dream_emotion_relief">Облегчение</string></resources>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Lunosfer</string>
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_explore">استكشاف</string>
+    <string name="nav_vision">الرؤية</string>
+    <string name="nav_messages">الرسائل</string>
+    <string name="nav_create">إنشاء</string>
+    <string name="nav_new_dream">سجّل حلماً</string>
+    <string name="nav_new_vision">رؤية جديدة</string>
+    <string name="nav_login">تسجيل الدخول</string>
+    <string name="nav_notifications">الإشعارات</string>
+<string name="dream_addTitle">شارك حلمك</string><string name="dream_placeholder">اكتب حلمك بأكبر قدر من التفاصيل التي تتذكرها...</string><string name="dream_location">الموقع</string><string name="dream_public">عام</string><string name="dream_friends">للأصدقاء فقط</string><string name="dream_private">خاص</string><string name="dream_shareInFeed">المشاركة في الخلاصة العامة</string><string name="dream_submit">إرسال الحلم</string><string name="dream_validationContent">يرجى إدخال نص الحلم.</string><string name="dream_createFailed">تعذر إنشاء الحلم.</string><string name="dream_unknownLocation">موقع غير معروف</string><string name="dream_emotion_joy">فرح</string><string name="dream_emotion_peace">سلام</string><string name="dream_emotion_love">حب</string><string name="dream_emotion_hope">أمل</string><string name="dream_emotion_awe">رهبة</string><string name="dream_emotion_surprise">دهشة</string><string name="dream_emotion_curiosity">فضول</string><string name="dream_emotion_confusion">ارتباك</string><string name="dream_emotion_fear">خوف</string><string name="dream_emotion_anxiety">قلق</string><string name="dream_emotion_sadness">حزن</string><string name="dream_emotion_loneliness">وحدة</string><string name="dream_emotion_anger">غضب</string><string name="dream_emotion_shame">خجل</string><string name="dream_emotion_disgust">اشمئزاز</string><string name="dream_emotion_relief">ارتياح</string></resources>
