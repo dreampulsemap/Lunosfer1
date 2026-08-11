@@ -1,3 +1,4 @@
+// PATH: app/src/main/java/io/lunosfer/dreamap/ui/screens/MessagesScreen.kt
 package io.lunosfer.dreamap.ui.screens
 
 import androidx.compose.foundation.BorderStroke
@@ -163,11 +164,6 @@ private fun ConversationsList(conversations: List<Conversation>, currentUserId: 
     }
 }
 
-/**
- * pages/api/messages/conversations.js'in döndüğü şekil: otherUser (profil),
- * lastMessage (içerik + is_read + created_at), unreadCount. Tıklama artık
- * Screen.Thread'e (bkz. ThreadScreen.kt) otherUser.id ile navigasyon yapıyor.
- */
 @Composable
 private fun ConversationRow(conversation: Conversation, currentUserId: String?, onClick: () -> Unit) {
     val hasUnread = conversation.unreadCount > 0
@@ -223,7 +219,12 @@ private fun ConversationRow(conversation: Conversation, currentUserId: String?, 
                 }
                 Text(
                     text = conversation.lastMessage.content
-                        ?: if (conversation.lastMessage.attachmentType != null) "Ek gönderildi" else "",
+                        ?: when (conversation.lastMessage.attachmentType) {
+                            "image" -> "📷 Fotoğraf"
+                            "video" -> "🎥 Video"
+                            "file" -> "📎 Dosya"
+                            else -> if (conversation.lastMessage.attachmentType != null) "Ek gönderildi" else ""
+                        },
                     color = if (hasUnread) Color.White.copy(alpha = 0.85f) else Color(0xFF94A3B8),
                     fontSize = 12.sp,
                     maxLines = 1,
