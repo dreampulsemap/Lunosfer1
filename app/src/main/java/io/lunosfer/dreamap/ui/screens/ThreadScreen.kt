@@ -1,3 +1,4 @@
+// PATH: app/src/main/java/io/lunosfer/dreamap/ui/screens/ThreadScreen.kt
 package io.lunosfer.dreamap.ui.screens
 
 import androidx.compose.foundation.background
@@ -16,6 +17,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -42,14 +44,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
-/**
- * pages/api/messages/thread.js + send.js için ekran. otherUserId
- * MainScreen.kt'deki NavHost'tan route argümanı olarak geliyor
- * (bkz. Screen.Thread). currentUserId, kendi mesajlarımızı sağda/farklı
- * renkte göstermek için supabaseClient'ten senkron okunuyor — AuthScreen
- * ve CreateDreamScreen'de zaten kanıtlanmış aynı desen
- * (supabaseClient.auth.currentUserOrNull()).
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ThreadScreen(otherUserId: String, navController: androidx.navigation.NavController) {
@@ -98,7 +92,6 @@ fun ThreadScreen(otherUserId: String, navController: androidx.navigation.NavCont
 
         if (state.sendError != null) {
             LaunchedEffect(state.sendError) {
-                // Hata birkaç saniye görünsün, sonra kendiliğinden kapansın
                 kotlinx.coroutines.delay(3000)
                 viewModel.dismissSendError()
             }
@@ -271,6 +264,13 @@ private fun MessageBubble(message: Message, isOwn: Boolean, onReact: (String) ->
                                 fontSize = 14.sp,
                                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)
                             )
+                        } else if (message.attachmentType != null && message.attachmentUrl != null) {
+                            AttachmentContent(
+                                url = message.attachmentUrl,
+                                type = message.attachmentType,
+                                name = message.attachmentName,
+                                isOwn = isOwn
+                            )
                         } else if (message.attachmentType != null) {
                             Text(
                                 text = attachmentLabel(message.attachmentType),
@@ -325,6 +325,90 @@ private fun MessageBubble(message: Message, isOwn: Boolean, onReact: (String) ->
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AttachmentContent(url: String, type: String, name: String?, isOwn: Boolean) {
+    val context = LocalContext.current
+    val labelColor = if (isOwn) Void950.copy(alpha = 0.7f) else Color(0xFF94A3B8)
+
+    when (type) {
+        "image" -> {
+            AsyncImage(
+                model = url,
+                contentDescription = name ?: "Fotoğraf",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .widthIn(max = 260.dp)
+                    .heightIn(max = 320.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .clickable { openAttachmentExternally(context, url) }
+            )
+        }
+        "video" -> {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(horizontal = 14.dp, vertical = 10.dp)
+                    .clickable { openAttachmentExternally(context, url) }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(if (isOwn) Void950.copy(alpha = 0.15f) else Color.White.copy(alpha = 0.1f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Filled.PlayArrow,
+                        contentDescription = "Oynat",
+                        tint = if (isOwn) Void950 else Color.White,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    text = name ?: "Video",
+                    color = if (isOwn) Void950 else Color.White,
+                    fontSize = 13.sp,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
+            }
+        }
+        else -> {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(horizontal = 14.dp, vertical = 10.dp)
+                    .clickable { openAttachmentExternally(context, url) }
+            ) {
+                Icon(
+                    Icons.Filled.AttachFile,
+                    contentDescription = null,
+                    tint = labelColor,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = name ?: "Dosya",
+                    color = if (isOwn) Void950 else Color.White,
+                    fontSize = 13.sp,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
+private fun openAttachmentExternally(context: android.content.Context, url: String) {
+    try {
+        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        Toast.makeText(context, "Dosya açılamadı", Toast.LENGTH_SHORT).show()
     }
 }
 
