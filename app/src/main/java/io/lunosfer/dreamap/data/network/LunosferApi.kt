@@ -8,6 +8,10 @@ import io.lunosfer.dreamap.data.model.ThreadResponse
 import io.lunosfer.dreamap.data.model.UnreadCountResponse
 import io.lunosfer.dreamap.data.model.VisionsFeedResponse
 import io.lunosfer.dreamap.data.model.AnalyzeDreamRequest
+import io.lunosfer.dreamap.data.model.SendMessageRequest
+import io.lunosfer.dreamap.data.model.SendMessageResponse
+import io.lunosfer.dreamap.data.model.ReactMessageRequest
+import io.lunosfer.dreamap.data.model.PushSubscriptionRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.GET
@@ -82,6 +86,15 @@ interface LunosferApi {
 
     @GET("api/messages/unread-count")
     suspend fun getUnreadCount(): UnreadCountResponse
+
+    @POST("api/messages/send")
+    suspend fun sendMessage(@Body request: SendMessageRequest): SendMessageResponse
+
+    @POST("api/messages/react")
+    suspend fun reactMessage(@Body request: ReactMessageRequest)
+
+    @POST("api/push/subscribe")
+    suspend fun subscribePush(@Body request: PushSubscriptionRequest)
 
     @POST("api/analyze-dream")
     suspend fun analyzeDream(@Body request: AnalyzeDreamRequest)

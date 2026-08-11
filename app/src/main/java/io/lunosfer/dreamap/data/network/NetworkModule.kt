@@ -35,7 +35,7 @@ object NetworkModule {
         .build()
 
     private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl(BuildConfig.APP_URL)
+        .baseUrl(BuildConfig.APP_URL.replace("https://lunosfer.com", "https://www.lunosfer.com"))
         .client(okHttpClient)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()

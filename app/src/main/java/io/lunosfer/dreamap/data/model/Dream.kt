@@ -27,7 +27,8 @@ data class Dream(
     // home-feed.js JOIN sonucunda ekleniyor; explore/feed.js'de de owner attachOwners() ile geliyor.
     val owner: UserProfile? = null,
     // home-feed.js her item'a feed_type: 'dream' | 'vision' ekliyor, tek listede ayırt etmek için.
-    @SerialName("feed_type") val feedType: String? = "dream"
+    @SerialName("feed_type") val feedType: String? = "dream",
+    @SerialName("ai_jungian_analysis") val aiJungianAnalysis: AiJungianAnalysis? = null
 ) {
     val displayTitle: String get() = aiTitle?.takeIf { it.isNotBlank() } ?: content.take(60)
 }

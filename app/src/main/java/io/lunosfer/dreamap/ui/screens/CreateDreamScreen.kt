@@ -51,8 +51,11 @@ import java.util.Date
 import java.util.Locale
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.LocationManager
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
@@ -142,6 +145,19 @@ fun CreateDreamScreen(navController: NavController) {
             Toast.makeText(context, "Microphone permission required", Toast.LENGTH_SHORT).show()
         }
     }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { _ ->
+        coroutineScope.launch(Dispatchers.IO) {
+            val sysLoc = getSystemLocationName(context)
+            if (sysLoc.isNotBlank()) {
+                withContext(Dispatchers.Main) {
+                    if (location.isEmpty()) location = sysLoc
+                }
+            }
+        }
+    }
     
     fun toggleListening() {
         if (!SpeechRecognizer.isRecognitionAvailable(context)) {
@@ -191,24 +207,41 @@ fun CreateDreamScreen(navController: NavController) {
     )
 
     LaunchedEffect(Unit) {
+        val hasFine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val hasCoarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if (!hasFine && !hasCoarse) {
+            locationPermissionLauncher.launch(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+            )
+        }
+
         withContext(Dispatchers.IO) {
-            try {
-                val url = URL("https://ipinfo.io/json")
-                val connection = url.openConnection() as java.net.HttpURLConnection
-                connection.setRequestProperty("User-Agent", "Mozilla/5.0")
-                val response = connection.inputStream.bufferedReader().use { it.readText() }
-                val json = JSONObject(response)
-                val city = json.optString("city")
-                val countryCode = json.optString("country")
-                val country = if (countryCode.isNotBlank()) Locale("", countryCode).displayCountry else ""
-                val loc = listOf(city, country).filter { it.isNotBlank() }.joinToString(", ")
+            val sysLoc = getSystemLocationName(context)
+            if (sysLoc.isNotBlank()) {
                 withContext(Dispatchers.Main) {
-                    if (loc.isNotBlank() && location.isEmpty()) {
-                        location = loc
-                    }
+                    if (location.isEmpty()) location = sysLoc
                 }
-            } catch (e: Exception) {
-                android.util.Log.e("CreateDreamScreen", "Failed to fetch location", e)
+            } else {
+                try {
+                    val url = URL("https://ipinfo.io/json")
+                    val connection = url.openConnection() as java.net.HttpURLConnection
+                    connection.setRequestProperty("User-Agent", "Mozilla/5.0")
+                    connection.connectTimeout = 3000
+                    connection.readTimeout = 3000
+                    val response = connection.inputStream.bufferedReader().use { it.readText() }
+                    val json = JSONObject(response)
+                    val city = json.optString("city")
+                    val countryCode = json.optString("country")
+                    val country = if (countryCode.isNotBlank()) Locale("", countryCode).displayCountry else ""
+                    val loc = listOf(city, country).filter { it.isNotBlank() }.joinToString(", ")
+                    withContext(Dispatchers.Main) {
+                        if (loc.isNotBlank() && location.isEmpty()) {
+                            location = loc
+                        }
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.e("CreateDreamScreen", "Failed to fetch location", e)
+                }
             }
         }
     }
@@ -270,7 +303,7 @@ fun CreateDreamScreen(navController: NavController) {
                             items(results) { hit ->
                                 AsyncImage(
                                     model = hit.webformatURL,
-                                    contentDescription = hit.tags,
+                                    contentDescription = hit.tags.joinToString(", "),
                                     contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -282,16 +315,16 @@ fun CreateDreamScreen(navController: NavController) {
                                                     val req = PixabayImageRequest(
                                                         pixabayId = hit.id,
                                                         imageUrl = hit.webformatURL,
-                                                        tags = hit.tags ?: "",
+                                                        tags = hit.tags.joinToString(", "),
                                                         pixabayUser = hit.user,
-                                                        width = hit.imageWidth,
-                                                        height = hit.imageHeight
+                                                        width = hit.width,
+                                                        height = hit.height
                                                     )
                                                     val res = NetworkModule.api.savePixabayImage(req)
                                                     aiImageUrl = res.url
                                                     imageSource = "pixabay"
-                                                    imageWidth = hit.imageWidth
-                                                    imageHeight = hit.imageHeight
+                                                    imageWidth = hit.width
+                                                    imageHeight = hit.height
                                                     showPixabayDialog = false
                                                 } catch (e: Exception) {
                                                     Toast.makeText(context, "Error selecting image", Toast.LENGTH_SHORT).show()
@@ -686,4 +719,36 @@ val charCount = content.length
             }
         }
     }
+}
+
+private fun getSystemLocationName(context: Context): String {
+    try {
+        val hasFine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val hasCoarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if (!hasFine && !hasCoarse) return ""
+
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return ""
+        val providers = locationManager.getProviders(true)
+        var bestLocation: android.location.Location? = null
+        for (provider in providers) {
+            val loc = locationManager.getLastKnownLocation(provider) ?: continue
+            if (bestLocation == null || loc.accuracy < bestLocation.accuracy) {
+                bestLocation = loc
+            }
+        }
+        if (bestLocation != null) {
+            val geocoder = Geocoder(context, Locale.getDefault())
+            @Suppress("DEPRECATION")
+            val addresses = geocoder.getFromLocation(bestLocation.latitude, bestLocation.longitude, 1)
+            val addr = addresses?.firstOrNull()
+            if (addr != null) {
+                val city = addr.locality ?: addr.subAdminArea ?: addr.adminArea ?: ""
+                val country = addr.countryName ?: ""
+                return listOf(city, country).filter { it.isNotBlank() }.joinToString(", ")
+            }
+        }
+    } catch (e: Exception) {
+        android.util.Log.e("CreateDreamScreen", "System location error", e)
+    }
+    return ""
 }

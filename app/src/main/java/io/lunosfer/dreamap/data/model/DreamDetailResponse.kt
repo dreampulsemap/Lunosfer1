@@ -23,8 +23,15 @@ data class DreamDetail(
     @SerialName("created_at") val createdAt: String,
     @SerialName("analysis_status") val analysisStatus: String? = null,
     @SerialName("analysis_error") val analysisError: String? = null,
-    @SerialName("ai_jungian_analysis") val aiJungianAnalysis: AiJungianAnalysis? = null
-)
+    @SerialName("ai_jungian_analysis") val aiJungianAnalysis: AiJungianAnalysis? = null,
+    @SerialName("cover_image_url") val coverImageUrl: String? = null,
+    @SerialName("ai_image_url") val aiImageUrl: String? = null,
+    @SerialName("image_url") val imageUrl: String? = null
+) {
+    val displayImageUrl: String? get() = coverImageUrl?.takeIf { it.isNotBlank() }
+        ?: aiImageUrl?.takeIf { it.isNotBlank() }
+        ?: imageUrl?.takeIf { it.isNotBlank() }
+}
 
 @Serializable
 data class AiJungianAnalysis(

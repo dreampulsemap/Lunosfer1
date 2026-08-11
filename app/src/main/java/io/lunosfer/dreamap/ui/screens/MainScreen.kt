@@ -45,7 +45,12 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val showTopBottomBars = currentRoute != Screen.Auth.route
+    // Kendi TopAppBar'ını çizen ekranlar (geri oku + başlık) dış Scaffold'un
+    // genel TopBar'ıyla çakışır — bu yüzden bunlar için dış bar'lar gizlenir.
+    // Not: CreateDreamScreen ve ProfileScreen'de de aynı çakışma zaten
+    // mevcut (bu listeye dahil değiller, kapsam dışı — ayrı bir düzeltme).
+    val fullScreenRoutes = setOf(Screen.DreamDetail.route, Screen.Thread.route)
+    val showTopBottomBars = currentRoute != Screen.Auth.route && currentRoute !in fullScreenRoutes
 
     Scaffold(
         topBar = {
@@ -79,7 +84,13 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             composable(Screen.Home.route) { HomeScreen(onDreamClick = { id -> navController.navigate(Screen.DreamDetail.createRoute(id)) }) }
             composable(Screen.Explore.route) { ExploreScreen() }
             composable(Screen.Vision.route) { VisionScreen() }
-            composable(Screen.Messages.route) { MessagesScreen() }
+            composable(Screen.Messages.route) { 
+                MessagesScreen(navController = navController, onLoginClick = { navController.navigate(Screen.Auth.route) }) 
+            }
+            composable(Screen.Thread.route) { backStackEntry ->
+                val otherUserId = backStackEntry.arguments?.getString("otherUserId") ?: return@composable
+                ThreadScreen(otherUserId = otherUserId, navController = navController)
+            }
             composable(Screen.CreateDream.route) { CreateDreamScreen(navController) }
             composable(Screen.CreateVision.route) { PlaceholderScreen(stringResource(R.string.nav_new_vision)) }
             composable("dream/{dreamId}", arguments = listOf(androidx.navigation.navArgument("dreamId") { type = androidx.navigation.NavType.LongType })) { backStackEntry -> val dreamId = backStackEntry.arguments?.getLong("dreamId") ?: return@composable; DreamDetailScreen(dreamId = dreamId, onBack = { navController.popBackStack() }) }

@@ -4,4 +4,4 @@
     <string name="dream_analysis_failed">Rüya analizi başarısız oldu.</string>
     <string name="dream_analysis_retry">Tekrar Dene</string>
     <string name="dream_analysis_title">Yapay Zeka Analizi</string>
-</resources>
+<string name="dream_slide_title_0">Rüya Görseli</string><string name="dream_slide_title_1">Rüya Metni</string><string name="dream_slide_title_2">AI Analizi</string></resources>

@@ -12,12 +12,12 @@ data class PixabaySearchResponse(
 @Serializable
 data class PixabayHit(
     val id: Long,
-    val tags: String? = null,
+    val tags: List<String> = emptyList(),
     val webformatURL: String,
     val previewURL: String? = null,
     val user: String,
-    val imageWidth: Int = 0,
-    val imageHeight: Int = 0
+    val width: Int = 0,
+    val height: Int = 0
 )
 
 @Serializable

@@ -8,7 +8,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -24,29 +27,91 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.status.SessionStatus
 import io.lunosfer.dreamap.data.model.Conversation
+import io.lunosfer.dreamap.supabase.supabaseClient
 import io.lunosfer.dreamap.ui.theme.*
 import io.lunosfer.dreamap.ui.viewmodel.MessagesViewModel
 import io.lunosfer.dreamap.ui.viewmodel.UiState
 
 @Composable
-fun MessagesScreen(viewModel: MessagesViewModel = viewModel()) {
+fun MessagesScreen(
+    navController: NavController,
+    onLoginClick: () -> Unit = {},
+    viewModel: MessagesViewModel = viewModel()
+) {
+    val sessionStatus by supabaseClient.auth.sessionStatus.collectAsState(initial = SessionStatus.Initializing)
+    val isLoggedIn = sessionStatus is SessionStatus.Authenticated || supabaseClient.auth.currentUserOrNull() != null
+    val currentUserId = supabaseClient.auth.currentUserOrNull()?.id
     val state by viewModel.state.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize().background(Void950)) {
-        when (val current = state) {
-            is UiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = AetherViolet)
+        if (!isLoggedIn) {
+            MessagesNotLoggedIn(onLoginClick = onLoginClick)
+        } else {
+            when (val current = state) {
+                is UiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = AetherViolet)
+                }
+                is UiState.Error -> MessagesError(message = current.message, onRetry = viewModel::retry)
+                is UiState.Success -> ConversationsList(
+                    conversations = current.data,
+                    currentUserId = currentUserId,
+                    onConversationClick = { otherUserId ->
+                        navController.navigate(Screen.Thread.routeFor(otherUserId))
+                    }
+                )
             }
-            is UiState.Error -> MessagesError(message = current.message, onRetry = viewModel::retry)
-            is UiState.Success -> ConversationsList(conversations = current.data)
         }
     }
 }
 
 @Composable
-private fun MessagesError(message: String, onRetry: () -> Unit) {
+private fun MessagesNotLoggedIn(onLoginClick: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Lock,
+            contentDescription = null,
+            tint = AstralGold,
+            modifier = Modifier.size(48.dp)
+        )
+        Spacer(Modifier.height(16.dp))
+        Text(
+            "Giriş Yapılması Gerekiyor",
+            color = Color.White,
+            style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily),
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            "Mesajlarınızı ve sohbetlerinizi görebilmek için oturum açmanız gerekmektedir.",
+            color = Color(0xFF94A3B8),
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(24.dp))
+        Button(
+            onClick = onLoginClick,
+            colors = ButtonDefaults.buttonColors(containerColor = AstralGold, contentColor = Void950),
+            modifier = Modifier.fillMaxWidth(0.7f)
+        ) {
+            Text("Giriş Yap", fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+private fun MessagesError(
+    message: String,
+    onRetry: () -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,7 +134,7 @@ private fun MessagesError(message: String, onRetry: () -> Unit) {
 }
 
 @Composable
-private fun ConversationsList(conversations: List<Conversation>) {
+private fun ConversationsList(conversations: List<Conversation>, currentUserId: String?, onConversationClick: (String) -> Unit) {
     if (conversations.isEmpty()) {
         Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -92,7 +157,7 @@ private fun ConversationsList(conversations: List<Conversation>) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(conversations, key = { it.otherUser.id }) { conversation ->
-            ConversationRow(conversation)
+            ConversationRow(conversation, currentUserId, onClick = { onConversationClick(conversation.otherUser.id) })
             HorizontalDivider(color = Color.White.copy(alpha = 0.05f))
         }
     }
@@ -100,18 +165,18 @@ private fun ConversationsList(conversations: List<Conversation>) {
 
 /**
  * pages/api/messages/conversations.js'in döndüğü şekil: otherUser (profil),
- * lastMessage (içerik + is_read + created_at), unreadCount. Şimdilik satıra
- * tıklama davranışı yok (thread ekranı henüz eklenmedi) — bu bilinçli bir
- * kapsam sınırlaması, sonraki adımda /api/messages/thread'e bağlanacak.
+ * lastMessage (içerik + is_read + created_at), unreadCount. Tıklama artık
+ * Screen.Thread'e (bkz. ThreadScreen.kt) otherUser.id ile navigasyon yapıyor.
  */
 @Composable
-private fun ConversationRow(conversation: Conversation) {
+private fun ConversationRow(conversation: Conversation, currentUserId: String?, onClick: () -> Unit) {
     val hasUnread = conversation.unreadCount > 0
+    val isLastMessageMine = conversation.lastMessage.senderId == currentUserId
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* TODO: thread ekranına navigasyon (sonraki adım) */ }
+            .clickable(onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp)
@@ -146,14 +211,25 @@ private fun ConversationRow(conversation: Conversation) {
                 fontSize = 14.sp,
                 fontWeight = if (hasUnread) FontWeight.Bold else FontWeight.SemiBold
             )
-            Text(
-                text = conversation.lastMessage.content
-                    ?: if (conversation.lastMessage.attachmentType != null) "Ek gönderildi" else "",
-                color = if (hasUnread) Color.White.copy(alpha = 0.85f) else Color(0xFF94A3B8),
-                fontSize = 12.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (isLastMessageMine) {
+                    Icon(
+                        imageVector = if (conversation.lastMessage.isRead) Icons.Filled.DoneAll else Icons.Filled.Done,
+                        contentDescription = null,
+                        tint = if (conversation.lastMessage.isRead) Color(0xFF34D399) else Color(0xFF64748B),
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                }
+                Text(
+                    text = conversation.lastMessage.content
+                        ?: if (conversation.lastMessage.attachmentType != null) "Ek gönderildi" else "",
+                    color = if (hasUnread) Color.White.copy(alpha = 0.85f) else Color(0xFF94A3B8),
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
 
         if (hasUnread) {

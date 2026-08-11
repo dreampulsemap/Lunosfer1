@@ -28,4 +28,4 @@
     <string name="dream_analysis_failed">Dream analysis failed.</string>
     <string name="dream_analysis_retry">Retry</string>
     <string name="dream_analysis_title">AI Analysis</string>
-</resources>
+<string name="dream_slide_title_0">Dream Image</string><string name="dream_slide_title_1">Dream Text</string><string name="dream_slide_title_2">AI Analysis</string></resources>
