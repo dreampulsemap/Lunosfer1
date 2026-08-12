@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
     <string name="app_name">Lunosfer</string>
     <string name="nav_home">الرئيسية</string>
     <string name="nav_explore">استكشاف</string>
@@ -60,5 +58,3 @@
     <string name="dream_slide_title_2">تحليل الذكاء الاصطناعي</string>
     <string name="retry">إعادة المحاولة</string>
     <string name="error_feed">تعذر تحميل الخلاصة</string>
-
-</resources>
