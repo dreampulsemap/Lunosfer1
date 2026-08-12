@@ -172,4 +172,8 @@
     <string name="vision_daily_seeds_no_active_goals">Du hast keine aktive Vision. Du kannst deine täglichen kleinen Schritte machen, indem du eine neue Vision hinzufügst.</string>
     <string name="vision_daily_seeds_no_seed_text">Der heutige Mikroschritt wurde noch nicht generiert.</string>
     <string name="vision_daily_seeds_generate_btn">Schritt vorschlagen</string>
+
+    <string name="empty_victory">Noch keine gefeierten Siege</string>
+    <string name="empty_phoenix">Die Phönix-Mauer schweigt</string>
+    <string name="empty_vision">Noch keine aktiven Visionen</string>
 </resources>

@@ -154,4 +154,25 @@
     <string name="spiritual_prophet_loading">正在求取预言…</string>
     <string name="spiritual_prophet_btn">咨询先知</string>
     <string name="spiritual_prophet_card_label">卡牌：%1$s</string>
+
+
+    <string name="vision_jung_guide">荣格指南</string>
+    <string name="empty_phoenix">凤凰墙静默无声</string>
+    <string name="vision_daily_compass_title">每日罗盘</string>
+    <string name="vision_retry">重试</string>
+    <string name="vision_compass_loading">宇宙解读中…</string>
+    <string name="vision_public_visions_title">公开愿景</string>
+    <string name="vision_compass_idle_text">轻触您的罗盘，探索今日的宇宙与精神方向。</string>
+    <string name="vision_compass_already_used">您今天已经查看过了，请明天再来。</string>
+    <string name="empty_vision">暂无活跃的愿景</string>
+    <string name="vision_daily_seeds_generate_btn">建议步骤</string>
+    <string name="vision_daily_seeds_no_seed_text">今日的微小步骤尚未生成。</string>
+    <string name="vision_load_failed">无法加载愿景</string>
+    <string name="vision_daily_seeds_title">今日待办（每日种子）</string>
+    <string name="vision_no_public_visions_desc">您可以自己创建第一个愿景。</string>
+    <string name="vision_compass_btn">抽取每日罗盘</string>
+    <string name="vision_daily_seeds_no_active_goals">您当前没有活跃的愿景。您可以通过添加新愿景来迈出每日的微小步伐。</string>
+    <string name="vision_no_public_visions_title">暂无公开愿景</string>
+    <string name="empty_victory">暂无值得庆祝的胜利</string>
+    <string name="vision_compass_archetype_label">原型：%1$s</string>
 </resources>

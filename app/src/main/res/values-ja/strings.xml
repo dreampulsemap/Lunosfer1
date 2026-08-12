@@ -170,4 +170,8 @@
     <string name="vision_daily_seeds_no_active_goals">アクティブなビジョンがありません。新しいビジョンを追加して、日々の小さな一歩を踏み出しましょう。</string>
     <string name="vision_daily_seeds_no_seed_text">本日のマイクロステップはまだ生成されていません。</string>
     <string name="vision_daily_seeds_generate_btn">ステップを提案</string>
+
+    <string name="empty_victory">まだ祝うべき勝利はありません</string>
+    <string name="empty_phoenix">フェニックス・ウォールは静まり返っています</string>
+    <string name="empty_vision">有効なビジョンはまだありません</string>
 </resources>

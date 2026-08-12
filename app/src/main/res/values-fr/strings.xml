@@ -170,4 +170,8 @@
     <string name="vision_daily_seeds_no_active_goals">Vous n\'avez aucune vision active. Vous pouvez faire de petits pas quotidiens en ajoutant une nouvelle vision.</string>
     <string name="vision_daily_seeds_no_seed_text">Le micro-pas d\'aujourd\'hui n\'a pas encore été généré.</string>
     <string name="vision_daily_seeds_generate_btn">Suggérer une étape</string>
+
+    <string name="empty_victory">Aucune victoire célébrée pour l\'instant</string>
+    <string name="empty_phoenix">Le mur du Phénix est silencieux</string>
+    <string name="empty_vision">Aucune vision active pour l\'instant</string>
 </resources>

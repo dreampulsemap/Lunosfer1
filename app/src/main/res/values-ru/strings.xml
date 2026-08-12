@@ -170,4 +170,8 @@
     <string name="vision_daily_seeds_no_active_goals">У вас нет активного видения. Вы можете делать небольшие ежедневные шаги, добавив новое видение.</string>
     <string name="vision_daily_seeds_no_seed_text">Микрошаг на сегодня еще не создан.</string>
     <string name="vision_daily_seeds_generate_btn">Предложить шаг</string>
+
+    <string name="empty_victory">Ещё нет отпразднованных побед</string>
+    <string name="empty_phoenix">Стена Феникса молчит</string>
+    <string name="empty_vision">Ещё нет активных видений</string>
 </resources>

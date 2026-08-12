@@ -155,4 +155,24 @@
     <string name="spiritual_prophet_loading">भविष्यवाणी निकाली जा रही है…</string>
     <string name="spiritual_prophet_btn">पैगंबर से परामर्श लें</string>
     <string name="spiritual_prophet_card_label">कार्ड: %1$s</string>
+
+    <string name="vision_no_public_visions_desc">आप स्वयं पहला दृष्टिकोण बना सकते हैं।</string>
+    <string name="empty_vision">अभी तक कोई सक्रिय दृष्टिकोण नहीं है</string>
+    <string name="vision_compass_btn">दैनिक कम्पास निकालें</string>
+    <string name="vision_public_visions_title">सार्वजनिक दृष्टिकोण</string>
+    <string name="vision_daily_seeds_generate_btn">चरण का सुझाव दें</string>
+    <string name="vision_daily_seeds_no_active_goals">आपका कोई सक्रिय दृष्टिकोण नहीं है। आप एक नया दृष्टिकोण जोड़कर अपने दैनिक छोटे कदम उठा सकते हैं।</string>
+    <string name="empty_phoenix">फीनिक्स वॉल शांत है</string>
+    <string name="vision_compass_loading">ब्रह्मांडीय पठन जारी है…</string>
+    <string name="vision_compass_idle_text">आज की ब्रह्मांडीय और आध्यात्मिक दिशा जानने के लिए अपने कम्पास पर टैप करें।</string>
+    <string name="vision_load_failed">दृष्टिकोण लोड नहीं किए जा सके</string>
+    <string name="vision_compass_archetype_label">आर्कटाइप: %1$s</string>
+    <string name="vision_retry">पुनः प्रयास करें</string>
+    <string name="vision_daily_compass_title">दैनिक कम्पास</string>
+    <string name="vision_daily_seeds_no_seed_text">आज का सूक्ष्म-चरण अभी तक तैयार नहीं किया गया है।</string>
+    <string name="vision_daily_seeds_title">आज करने योग्य कार्य (दैनिक बीज)</string>
+    <string name="empty_victory">अभी तक कोई मनाई गई जीत नहीं है</string>
+    <string name="vision_compass_already_used">आपने आज पहले ही जाँच कर ली है, कल वापस आएँ।</string>
+    <string name="vision_no_public_visions_title">अभी तक कोई सार्वजनिक दृष्टिकोण नहीं है</string>
+    <string name="vision_jung_guide">युंग गाइड</string>
 </resources>
