@@ -1,5 +1,6 @@
 package io.lunosfer.dreamap.ui.components
 
+import io.lunosfer.dreamap.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -190,7 +192,7 @@ private fun RingItem(
         Spacer(Modifier.height(4.dp))
 
         Text(
-            text = if (ring.isSelf) "Sen" else ring.nameOrFallback,
+            text = if (ring.isSelf) stringResource(R.string.diary_ring_self) else ring.nameOrFallback,
             color = if (isUnseen) Color.White else Color.Gray,
             fontSize = 11.sp,
             fontWeight = if (isUnseen) FontWeight.Bold else FontWeight.Normal,

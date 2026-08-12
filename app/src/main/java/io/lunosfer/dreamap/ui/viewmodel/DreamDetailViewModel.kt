@@ -48,7 +48,7 @@ class DreamDetailViewModel : ViewModel() {
                 _state.value = successState
                 loadComments(id)
             }.onFailure { error ->
-                _state.value = DreamDetailUiState.Error(error.message ?: "Rüya yüklenemedi")
+                _state.value = DreamDetailUiState.Error(error.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_dream_load))
             }
         }
     }
@@ -172,7 +172,7 @@ class DreamDetailViewModel : ViewModel() {
                     )
                     _state.value = current.copy(
                         dream = updatedDream,
-                        actionMessage = "Rüya başarıyla güncellendi"
+                        actionMessage = io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.msg_dream_updated)
                     )
                 }
                 onComplete()
@@ -196,7 +196,7 @@ class DreamDetailViewModel : ViewModel() {
         viewModelScope.launch {
             repository.boostDream(dreamId).onSuccess { res ->
                 val current = _state.value as? DreamDetailUiState.Success ?: return@onSuccess
-                val msg = "Rüyanız parlatıldı! (Kalan Aura: ${res.aurasLeft ?: "—"})"
+                val msg = io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.msg_dream_boosted, res.aurasLeft?.toString() ?: "—")
                 _state.value = current.copy(actionMessage = msg)
             }.onFailure { err ->
                 val msg = err.message ?: ""
@@ -220,7 +220,7 @@ class DreamDetailViewModel : ViewModel() {
             repository.addBounty(dreamId, amount).onSuccess { res ->
                 val current = _state.value as? DreamDetailUiState.Success ?: return@onSuccess
                 val newTotal = res.newBounty ?: (current.bounty + amount)
-                val msg = "$amount Aura ödül eklendi! (Kalan Aura: ${res.aurasLeft ?: "—"})"
+                val msg = io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.msg_dream_bounty_added, amount, res.aurasLeft?.toString() ?: "—")
                 _state.value = current.copy(
                     bounty = newTotal,
                     actionMessage = msg

@@ -89,7 +89,7 @@ class DiaryComposerViewModel(
             try {
                 val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
                 if (bytes == null || bytes.isEmpty()) {
-                    _state.value = current.copy(isUploading = false, error = "Görsel okunamadı")
+                    _state.value = current.copy(isUploading = false, error = io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_image_read))
                     return@launch
                 }
                 val fileName = "story_${System.currentTimeMillis()}.jpg"
@@ -103,12 +103,12 @@ class DiaryComposerViewModel(
                     val latest = _state.value as? DiaryComposerUiState.Content ?: return@onFailure
                     _state.value = latest.copy(
                         isUploading = false,
-                        error = "Yükleme hatası: ${err.message}"
+                        error = io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_upload_failed, err.message ?: "")
                     )
                 }
             } catch (e: Exception) {
                 val latest = _state.value as? DiaryComposerUiState.Content ?: return@launch
-                _state.value = latest.copy(isUploading = false, error = "Görsel yüklenemedi: ${e.message}")
+                _state.value = latest.copy(isUploading = false, error = io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_image_upload_failed, e.message ?: ""))
             }
         }
     }
@@ -117,12 +117,12 @@ class DiaryComposerViewModel(
         val current = _state.value as? DiaryComposerUiState.Content ?: return
 
         if (current.mediaType == "text" && current.caption.isBlank()) {
-            _state.value = current.copy(error = "Metin girdisi için metin yazılması zorunludur.")
+            _state.value = current.copy(error = io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_text_required))
             return
         }
 
         if (current.mediaType != "text" && current.mediaUrl.isBlank()) {
-            _state.value = current.copy(error = "Lütfen bir medya seçin veya medya bağlantısı girin.")
+            _state.value = current.copy(error = io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_media_required))
             return
         }
 
@@ -145,7 +145,7 @@ class DiaryComposerViewModel(
                 val latest = _state.value as? DiaryComposerUiState.Content ?: return@onFailure
                 _state.value = latest.copy(
                     isSubmitting = false,
-                    error = err.message ?: "Paylaşılamadı"
+                    error = err.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_share_failed)
                 )
             }
         }

@@ -1,5 +1,6 @@
 package io.lunosfer.dreamap.ui.components
 
+import io.lunosfer.dreamap.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material3.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +63,7 @@ fun VisionGridCard(goal: Goal, onClick: () -> Unit) {
             )
 
             if (goal.status != "active") {
-                val statusLabel = if (goal.status == "completed") "TAMAMLANDI" else "BIRAKILDI"
+                val statusLabel = if (goal.status == "completed") stringResource(R.string.vision_status_completed) else stringResource(R.string.vision_status_abandoned)
                 Text(
                     text = statusLabel,
                     color = Color.White,
@@ -107,7 +109,7 @@ fun VisionGridCard(goal: Goal, onClick: () -> Unit) {
                 }
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     Icon(Icons.Filled.Star, contentDescription = null, tint = AstralGold, modifier = Modifier.size(10.dp))
-                    Text("${goal.believersCount ?: 0}", color = AstralGold, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.vision_believers_count, goal.believersCount ?: 0), color = AstralGold, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
         }

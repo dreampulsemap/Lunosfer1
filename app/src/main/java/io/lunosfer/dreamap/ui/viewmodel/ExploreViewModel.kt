@@ -86,7 +86,7 @@ class ExploreViewModel(
         viewModelScope.launch {
             repository.loadFirstPage()
                 .onSuccess { _state.value = UiState.Success(it) }
-                .onFailure { _state.value = UiState.Error(it.message ?: "Bilinmeyen hata") }
+                .onFailure { _state.value = UiState.Error(it.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_unknown)) }
         }
     }
 
@@ -101,7 +101,7 @@ class ExploreViewModel(
         viewModelScope.launch {
             visionRepository.loadHubGoals(status)
                 .onSuccess { stateFlow.value = UiState.Success(it) }
-                .onFailure { stateFlow.value = UiState.Error(it.message ?: "Bilinmeyen hata") }
+                .onFailure { stateFlow.value = UiState.Error(it.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_unknown)) }
         }
     }
 }

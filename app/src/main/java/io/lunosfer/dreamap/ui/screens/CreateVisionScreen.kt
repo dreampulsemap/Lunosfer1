@@ -2,6 +2,7 @@ package io.lunosfer.dreamap.ui.screens
 
 import android.app.DatePickerDialog
 import android.widget.Toast
+import io.lunosfer.dreamap.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,7 +16,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -122,13 +125,13 @@ fun CreateVisionScreen(
 
             // Title Field
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("Vizyon Başlığı *", color = AstralGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.create_vision_title_label), color = AstralGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 OutlinedTextField(
                     value = title,
                     onValueChange = {
                         if (it.length <= 120) title = it
                     },
-                    placeholder = { Text("Örn: 2026 Sonuna Kadar İspanyolca Öğren", color = Color.Gray) },
+                    placeholder = { Text(stringResource(R.string.create_vision_title_placeholder), color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     supportingText = {
@@ -150,13 +153,13 @@ fun CreateVisionScreen(
 
             // Description Field
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("Açıklama (Opsiyonel)", color = AstralGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.create_vision_desc_label), color = AstralGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 OutlinedTextField(
                     value = description,
                     onValueChange = {
                         if (it.length <= 2000) description = it
                     },
-                    placeholder = { Text("Hedefin detayları, neden istiyorsun?", color = Color.Gray) },
+                    placeholder = { Text(stringResource(R.string.create_vision_desc_placeholder), color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3,
                     maxLines = 6,
@@ -191,7 +194,7 @@ fun CreateVisionScreen(
 
             // Cover Image Section
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("Kapak Görseli (Opsiyonel)", color = AstralGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.create_vision_cover_label), color = AstralGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 if (coverImageUrl.isNullOrBlank()) {
                     OutlinedButton(
                         onClick = { showPixabayDialog = true },
@@ -200,7 +203,7 @@ fun CreateVisionScreen(
                         border = BorderStroke(1.dp, AstralGold.copy(alpha = 0.5f)),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("🖼️ Pixabay Medya Galerisinden Seç")
+                        Text(stringResource(R.string.create_vision_cover_pixabay_btn))
                     }
                 } else {
                     Box(
@@ -231,7 +234,7 @@ fun CreateVisionScreen(
 
             // Target Date Picker
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("Hedef Tarih (Opsiyonel)", color = AstralGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.create_vision_date_label), color = AstralGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 OutlinedCard(
                     onClick = { datePickerDialog.show() },
                     modifier = Modifier.fillMaxWidth(),
@@ -262,7 +265,7 @@ fun CreateVisionScreen(
 
             // Visibility Selection
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("Görünürlük", color = AstralGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.create_vision_visibility_label), color = AstralGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -292,7 +295,7 @@ fun CreateVisionScreen(
             // Roadmap Items (Yol Haritası)
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = "Yol Haritası (Mikro Hedefler) (${roadmapItems.size}/20)",
+                    text = stringResource(R.string.create_vision_roadmap_label, roadmapItems.size),
                     color = AstralGold,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold
@@ -306,7 +309,7 @@ fun CreateVisionScreen(
                     OutlinedTextField(
                         value = roadmapInput,
                         onValueChange = { roadmapInput = it },
-                        placeholder = { Text("Adım ekle (ör: Temel A1 kelimeleri)", color = Color.Gray, fontSize = 12.sp) },
+                        placeholder = { Text(stringResource(R.string.create_vision_roadmap_placeholder), color = Color.Gray, fontSize = 12.sp) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
@@ -441,7 +444,7 @@ fun CreateVisionScreen(
                     CircularProgressIndicator(color = Void950, modifier = Modifier.size(24.dp))
                 } else {
                     Text(
-                        text = "Vizyonu Başlat",
+                        text = stringResource(R.string.create_vision_submit_btn),
                         color = Void950,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold

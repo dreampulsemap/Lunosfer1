@@ -276,8 +276,8 @@ fun TopBar(
                     }
                     if (showAuraPopup) {
                         DropdownMenu(expanded = showAuraPopup, onDismissRequest = { showAuraPopup = false }) {
-                            DropdownMenuItem(text = { Text("Your Auras: 0") }, onClick = { showAuraPopup = false })
-                            DropdownMenuItem(text = { Text("Buy Aura") }, onClick = { showAuraPopup = false })
+                            DropdownMenuItem(text = { Text(stringResource(R.string.main_menu_auras)) }, onClick = { showAuraPopup = false })
+                            DropdownMenuItem(text = { Text(stringResource(R.string.main_menu_buy_aura)) }, onClick = { showAuraPopup = false })
                         }
                     }
                 }
@@ -286,7 +286,7 @@ fun TopBar(
         actions = {
             if (isLoggedIn) {
                 IconButton(onClick = { onSpiritualToolsClick?.invoke() }) {
-                    Icon(Icons.Filled.AutoAwesome, contentDescription = "Ruhsal Araçlar", tint = AstralGold)
+                    Icon(Icons.Filled.AutoAwesome, contentDescription = stringResource(R.string.main_menu_spiritual_tools), tint = AstralGold)
                 }
                 IconButton(onClick = { onNotificationsClick?.invoke() }) {
                     BadgedBox(
@@ -322,14 +322,14 @@ fun TopBar(
                     }
                     DropdownMenu(expanded = showMoreMenu, onDismissRequest = { showMoreMenu = false }) {
                         DropdownMenuItem(
-                            text = { Text("Ruhsal Araçlar") },
+                            text = { Text(stringResource(R.string.main_menu_spiritual_tools)) },
                             onClick = {
                                 showMoreMenu = false
                                 onSpiritualToolsClick?.invoke()
                             }
                         )
-                        DropdownMenuItem(text = { Text("Settings") }, onClick = { showMoreMenu = false })
-                        DropdownMenuItem(text = { Text("Help & Feedback") }, onClick = { showMoreMenu = false })
+                        DropdownMenuItem(text = { Text(stringResource(R.string.main_menu_settings)) }, onClick = { showMoreMenu = false })
+                        DropdownMenuItem(text = { Text(stringResource(R.string.main_menu_help)) }, onClick = { showMoreMenu = false })
                     }
                 }
             } else {

@@ -76,7 +76,7 @@ class PublicProfileViewModel(
                 )
             }.onFailure { err ->
                 if (page == 0) {
-                    _state.value = PublicProfileUiState.Error(err.message ?: "Profil yüklenemedi")
+                    _state.value = PublicProfileUiState.Error(err.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_profile_load))
                 } else {
                     val current = _state.value as? PublicProfileUiState.Success
                     if (current != null) {

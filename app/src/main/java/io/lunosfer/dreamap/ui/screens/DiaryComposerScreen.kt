@@ -3,6 +3,7 @@ package io.lunosfer.dreamap.ui.screens
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import io.lunosfer.dreamap.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,7 +18,9 @@ import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,7 +71,7 @@ fun DiaryComposerScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Yeni Günce / Hikaye",
+                        text = stringResource(R.string.diary_composer_title),
                         color = AstralGold,
                         style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily)
                     )
@@ -273,7 +276,7 @@ fun DiaryComposerScreen(
             // Connect to Vision Selector (Optional)
             if (contentState.availableGoals.isNotEmpty()) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Bir Vizyona Bağla (Opsiyonel)", color = AstralGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.diary_composer_link_vision_label), color = AstralGold, fontSize = 13.sp, fontWeight = FontWeight.Bold)
 
                     var expanded by remember { mutableStateOf(false) }
                     val selectedGoal = contentState.availableGoals.find { it.id == contentState.selectedGoalId }
@@ -301,7 +304,7 @@ fun DiaryComposerScreen(
                             modifier = Modifier.background(Void900)
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Bağlama (Hiçbiri)", color = Color.Gray) },
+                                text = { Text(stringResource(R.string.diary_composer_no_vision), color = Color.Gray) },
                                 onClick = {
                                     viewModel.setSelectedGoalId(null)
                                     expanded = false
@@ -336,7 +339,7 @@ fun DiaryComposerScreen(
                 if (contentState.isSubmitting) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Void950)
                 } else {
-                    Text("Günceyi Paylaş", color = Void950, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text(stringResource(R.string.diary_composer_share_btn), color = Void950, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 }
             }
         }

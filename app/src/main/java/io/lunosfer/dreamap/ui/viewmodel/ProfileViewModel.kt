@@ -44,7 +44,7 @@ class ProfileViewModel(
     fun loadData() {
         val uid = currentUserId
         if (uid == null) {
-            _state.value = ProfileUiState.Error("Oturum bulunamadı. Lütfen giriş yapın.")
+            _state.value = ProfileUiState.Error(io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_no_session))
             return
         }
 

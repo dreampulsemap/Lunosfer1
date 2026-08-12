@@ -1,5 +1,6 @@
 package io.lunosfer.dreamap.ui.screens
 
+import io.lunosfer.dreamap.R
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

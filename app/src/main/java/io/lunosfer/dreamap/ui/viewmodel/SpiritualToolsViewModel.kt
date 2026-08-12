@@ -52,12 +52,12 @@ class SpiritualToolsViewModel(
     fun generateMentalWall() {
         _mentalWallState.value = MentalWallUiState.Loading
         viewModelScope.launch {
-            repository.generateMentalWall("tr")
+            repository.generateMentalWall(io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.app_lang_code))
                 .onSuccess { res ->
                     _mentalWallState.value = MentalWallUiState.Success(res)
                 }
                 .onFailure { err ->
-                    _mentalWallState.value = MentalWallUiState.Error(err.message ?: "Zihin Duvarı üretilemedi")
+                    _mentalWallState.value = MentalWallUiState.Error(err.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_mental_wall))
                 }
         }
     }
@@ -70,7 +70,7 @@ class SpiritualToolsViewModel(
                     _psycheMapState.value = PsycheMapUiState.Success(res)
                 }
                 .onFailure { err ->
-                    _psycheMapState.value = PsycheMapUiState.Error(err.message ?: "Psyche Map yüklenemedi")
+                    _psycheMapState.value = PsycheMapUiState.Error(err.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_psyche_map))
                 }
         }
     }
@@ -79,12 +79,12 @@ class SpiritualToolsViewModel(
         if (question.isBlank()) return
         _prophetState.value = ProphetUiState.Loading
         viewModelScope.launch {
-            repository.consultProphet(question, "tr")
+            repository.consultProphet(question, io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.app_lang_code))
                 .onSuccess { res ->
                     _prophetState.value = ProphetUiState.Success(res)
                 }
                 .onFailure { err ->
-                    _prophetState.value = ProphetUiState.Error(err.message ?: "Kahin yanıt veremedi")
+                    _prophetState.value = ProphetUiState.Error(err.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_prophet_failed))
                 }
         }
     }

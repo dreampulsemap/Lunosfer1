@@ -1,6 +1,7 @@
 package io.lunosfer.dreamap.ui.screens
 
 import android.widget.Toast
+import io.lunosfer.dreamap.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,7 +14,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,7 +71,7 @@ fun NotificationsScreen(
                     val s = state as? NotificationsUiState.Success
                     if (s != null && s.unreadCount > 0) {
                         TextButton(onClick = { viewModel.markAsRead(null) }) {
-                            Text("Tümünü Okundu Yap", color = AstralGold, fontSize = 12.sp)
+                            Text(stringResource(R.string.notifications_mark_all_read), color = AstralGold, fontSize = 12.sp)
                         }
                     }
                 },
@@ -99,7 +102,7 @@ fun NotificationsScreen(
                             onClick = { viewModel.loadNotifications() },
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = AstralGold)
                         ) {
-                            Text("Yeniden Denetle")
+                            Text(stringResource(R.string.notifications_refresh))
                         }
                     }
                 }
@@ -113,7 +116,7 @@ fun NotificationsScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Icon(Icons.Default.NotificationsNone, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(48.dp))
-                            Text("Henüz bildiriminiz yok.", color = Color.Gray, fontSize = 14.sp)
+                            Text(stringResource(R.string.notifications_empty), color = Color.Gray, fontSize = 14.sp)
                         }
                     } else {
                         LazyColumn(

@@ -40,7 +40,7 @@ class NotificationsViewModel(
                     unreadCount = res.unreadCount
                 )
             }.onFailure { err ->
-                _state.value = NotificationsUiState.Error(err.message ?: "Bildirimler yüklenemedi")
+                _state.value = NotificationsUiState.Error(err.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_notifications_load))
             }
         }
     }

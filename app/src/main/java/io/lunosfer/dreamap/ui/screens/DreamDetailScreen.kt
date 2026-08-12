@@ -1,6 +1,7 @@
 package io.lunosfer.dreamap.ui.screens
 
 import android.widget.Toast
+import io.lunosfer.dreamap.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -104,7 +105,7 @@ fun DreamDetailScreen(
                             onClick = { viewModel.loadDream(dreamId) },
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = AstralGold)
                         ) {
-                            Text("Tekrar Dene")
+                            Text(stringResource(R.string.retry))
                         }
                     }
                 }
@@ -140,12 +141,12 @@ fun DreamDetailScreen(
 }
 
 @Composable
-private fun getSlideTitle(pageIndex: Int): String {
+private fun getDetailSlideTitle(pageIndex: Int): String {
     return when (pageIndex) {
         0 -> stringResource(id = io.lunosfer.dreamap.R.string.dream_slide_title_0)
         1 -> stringResource(id = io.lunosfer.dreamap.R.string.dream_slide_title_1)
         2 -> stringResource(id = io.lunosfer.dreamap.R.string.dream_slide_title_2)
-        else -> "Detail"
+        else -> stringResource(R.string.dream_detail_slide_title_detail)
     }
 }
 
@@ -266,17 +267,17 @@ fun DreamDetailContent(
                 // Owner actions: Edit & Delete buttons
                 if (isOwner) {
                     IconButton(onClick = { showEditDialog = true }, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Filled.Edit, contentDescription = "Düzenle", tint = AstralGold, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.dream_detail_edit_btn), tint = AstralGold, modifier = Modifier.size(18.dp))
                     }
                     IconButton(onClick = { showDeleteDialog = true }, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Filled.Delete, contentDescription = "Sil", tint = Color(0xFFF87171), modifier = Modifier.size(18.dp))
+                        Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.dream_detail_delete_btn), tint = Color(0xFFF87171), modifier = Modifier.size(18.dp))
                     }
                 }
             }
         }
 
         // Page Indicator
-        val slideLabel = getSlideTitle(pagerState.currentPage)
+        val slideLabel = getDetailSlideTitle(pagerState.currentPage)
         Row(
             modifier = Modifier.fillMaxWidth().padding(start = 4.dp, bottom = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -299,7 +300,7 @@ fun DreamDetailContent(
                         .padding(horizontal = 8.dp, vertical = 2.dp)
                 ) {
                     Text(
-                        text = "🏆 Ödül: ${state.bounty} Aura",
+                        text = stringResource(R.string.dream_detail_bounty_label, state.bounty),
                         color = AstralGold,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
@@ -353,7 +354,7 @@ fun DreamDetailContent(
             ) {
                 Icon(
                     imageVector = if (state.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = "Beğen",
+                    contentDescription = stringResource(R.string.dream_detail_like_cd),
                     tint = if (state.isLiked) Color(0xFFEF4444) else Color(0xFF94A3B8),
                     modifier = Modifier.size(20.dp)
                 )
@@ -376,7 +377,7 @@ fun DreamDetailContent(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.ModeComment,
-                    contentDescription = "Yorumlar",
+                    contentDescription = stringResource(R.string.dream_detail_comments_cd),
                     tint = AstralGold,
                     modifier = Modifier.size(20.dp)
                 )
@@ -397,7 +398,7 @@ fun DreamDetailContent(
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Text("✦ Parlat (3 Aura)", fontSize = 11.sp, color = Color.White)
+                        Text(stringResource(R.string.dream_detail_boost_btn), fontSize = 11.sp, color = Color.White)
                     }
 
                     OutlinedButton(
@@ -407,7 +408,7 @@ fun DreamDetailContent(
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Text("🏆 Ödül Ekle", fontSize = 11.sp)
+                        Text(stringResource(R.string.dream_detail_add_bounty_btn), fontSize = 11.sp)
                     }
                 }
             }
@@ -445,8 +446,8 @@ fun DreamDetailContent(
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             containerColor = Void900,
-            title = { Text("Rüyayı Sil", color = Color.White) },
-            text = { Text("Bu rüyayı akıştan kaldırmak mı yoksa kalıcı olarak silmek mi istersiniz?", color = Color.LightGray) },
+            title = { Text(stringResource(R.string.dream_detail_delete_title), color = Color.White) },
+            text = { Text(stringResource(R.string.dream_detail_delete_desc), color = Color.LightGray) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -454,7 +455,7 @@ fun DreamDetailContent(
                         onDeleteDream(false) // Hard delete
                     }
                 ) {
-                    Text("Kalıcı Olarak Sil", color = Color(0xFFF87171))
+                    Text(stringResource(R.string.dream_detail_delete_permanent), color = Color(0xFFF87171))
                 }
             },
             dismissButton = {
@@ -465,10 +466,10 @@ fun DreamDetailContent(
                             onDeleteDream(true) // Soft delete
                         }
                     ) {
-                        Text("Akıştan Kaldır", color = AstralGold)
+                        Text(stringResource(R.string.dream_detail_delete_hide), color = AstralGold)
                     }
                     TextButton(onClick = { showDeleteDialog = false }) {
-                        Text("İptal", color = Color.Gray)
+                        Text(stringResource(R.string.dream_detail_cancel), color = Color.Gray)
                     }
                 }
             }
@@ -512,7 +513,7 @@ private fun CommentsSection(
                 .padding(12.dp)
         ) {
             Text(
-                text = "Yorumlar (${comments.size})",
+                text = stringResource(R.string.dream_detail_comments_count, comments.size),
                 color = AstralGold,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
@@ -531,7 +532,7 @@ private fun CommentsSection(
                     )
                 } else if (comments.isEmpty()) {
                     Text(
-                        text = "Henüz yorum yapılmamış. İlk yorumu siz yazın!",
+                        text = stringResource(R.string.dream_detail_no_comments),
                         color = Color.Gray,
                         fontSize = 12.sp,
                         modifier = Modifier.align(Alignment.Center)
@@ -563,7 +564,7 @@ private fun CommentsSection(
                 OutlinedTextField(
                     value = commentText,
                     onValueChange = { commentText = it },
-                    placeholder = { Text("Yorum yazın...", color = Color.Gray, fontSize = 12.sp) },
+                    placeholder = { Text(stringResource(R.string.dream_detail_comment_placeholder), color = Color.Gray, fontSize = 12.sp) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -592,7 +593,7 @@ private fun CommentsSection(
                     } else {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Send,
-                            contentDescription = "Gönder",
+                            contentDescription = stringResource(R.string.dream_detail_comment_send_cd),
                             tint = Void950,
                             modifier = Modifier.size(18.dp)
                         )
@@ -622,7 +623,7 @@ private fun CommentItemRow(
         if (!avatarUrl.isNullOrBlank()) {
             AsyncImage(
                 model = avatarUrl,
-                contentDescription = "Avatar",
+                contentDescription = stringResource(R.string.dream_detail_avatar_cd),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(28.dp)
@@ -667,7 +668,7 @@ private fun CommentItemRow(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Close,
-                    contentDescription = "Yorumu sil",
+                    contentDescription = stringResource(R.string.dream_detail_comment_delete_cd),
                     tint = Color.Gray,
                     modifier = Modifier.size(14.dp)
                 )
@@ -690,13 +691,15 @@ private fun EditDreamDialog(
     var tagInput by remember { mutableStateOf("") }
     var tags by remember { mutableStateOf(dream.tags ?: emptyList()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    val errEmptyText = stringResource(R.string.dream_detail_err_empty_text)
+    val errTooLongText = stringResource(R.string.dream_detail_err_too_long)
 
     val maxTags = 10
 
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = Void900,
-        title = { Text("Rüyayı Düzenle", color = Color.White, fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(R.string.dream_detail_edit_title), color = Color.White, fontWeight = FontWeight.Bold) },
         text = {
             Column(
                 modifier = Modifier
@@ -711,7 +714,7 @@ private fun EditDreamDialog(
                 OutlinedTextField(
                     value = content,
                     onValueChange = { content = it },
-                    label = { Text("Rüya Metni") },
+                    label = { Text(stringResource(R.string.dream_detail_edit_text_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 6,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -725,7 +728,7 @@ private fun EditDreamDialog(
                 OutlinedTextField(
                     value = locationName,
                     onValueChange = { locationName = it },
-                    label = { Text("Konum") },
+                    label = { Text(stringResource(R.string.dream_detail_edit_location_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -750,7 +753,7 @@ private fun EditDreamDialog(
                             tagInput = input
                         }
                     },
-                    label = { Text("Etiket ekle (virgül koyun)") },
+                    label = { Text(stringResource(R.string.dream_detail_edit_tags_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -783,7 +786,7 @@ private fun EditDreamDialog(
                         onCheckedChange = { inFeed = it },
                         colors = CheckboxDefaults.colors(checkedColor = AstralGold, checkmarkColor = Void950)
                     )
-                    Text("Akışta göster", color = Color.White, fontSize = 13.sp)
+                    Text(stringResource(R.string.dream_detail_edit_visibility_label), color = Color.White, fontSize = 13.sp)
                 }
             }
         },
@@ -791,11 +794,11 @@ private fun EditDreamDialog(
             Button(
                 onClick = {
                     if (content.isBlank()) {
-                        errorMessage = "Rüya metni boş olamaz"
+                        errorMessage = errEmptyText
                         return@Button
                     }
                     if (content.length > 12000) {
-                        errorMessage = "Rüya metni 12.000 karakteri geçemez"
+                        errorMessage = errTooLongText
                         return@Button
                     }
                     val processedTags = tags.map { it.trim().lowercase() }.take(maxTags)
@@ -812,12 +815,12 @@ private fun EditDreamDialog(
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = AstralGold)
             ) {
-                Text("Kaydet", color = Void950, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.dream_detail_save_btn), color = Void950, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("İptal", color = Color.Gray)
+                Text(stringResource(R.string.dream_detail_cancel), color = Color.Gray)
             }
         }
     )
@@ -830,14 +833,15 @@ private fun AddBountyDialog(
 ) {
     var amountText by remember { mutableStateOf("5") }
     var errorText by remember { mutableStateOf<String?>(null) }
+    val errRangeText = stringResource(R.string.dream_detail_bounty_err_range)
 
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = Void900,
-        title = { Text("Ödül Ekle (Aura)", color = Color.White, fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(R.string.dream_detail_bounty_title), color = Color.White, fontWeight = FontWeight.Bold) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Bu rüyaya eklemek istediğiniz Aura miktarını girin (1-50):", color = Color.LightGray, fontSize = 13.sp)
+                Text(stringResource(R.string.dream_detail_bounty_desc), color = Color.LightGray, fontSize = 13.sp)
                 if (errorText != null) {
                     Text(errorText!!, color = Color(0xFFF87171), fontSize = 12.sp)
                 }
@@ -860,19 +864,19 @@ private fun AddBountyDialog(
                 onClick = {
                     val amt = amountText.toIntOrNull()
                     if (amt == null || amt < 1 || amt > 50) {
-                        errorText = "Lütfen 1 ile 50 arasında bir miktar girin"
+                        errorText = errRangeText
                         return@Button
                     }
                     onConfirm(amt)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = AstralGold)
             ) {
-                Text("Ekle", color = Void950, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.dream_detail_add_btn), color = Void950, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("İptal", color = Color.Gray)
+                Text(stringResource(R.string.dream_detail_cancel), color = Color.Gray)
             }
         }
     )
@@ -910,7 +914,7 @@ private fun DreamImageCardPage(
                 if (!imageUrl.isNullOrBlank()) {
                     AsyncImage(
                         model = imageUrl,
-                        contentDescription = "Rüya Görseli",
+                        contentDescription = stringResource(R.string.dream_detail_image_cd),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -1002,7 +1006,7 @@ private fun DreamImageCardPage(
 private fun DreamTextCardPage(
     dream: DreamDetail
 ) {
-    val titleLabel = getSlideTitle(1)
+    val titleLabel = getDetailSlideTitle(1)
 
     Card(
         modifier = Modifier
@@ -1066,7 +1070,7 @@ private fun DreamAnalysisCardPage(
     onRequestDeepAnalysis: () -> Unit
 ) {
     val locale = Locale.getDefault().language
-    val titleLabel = getSlideTitle(2)
+    val titleLabel = getDetailSlideTitle(2)
 
     Card(
         modifier = Modifier
@@ -1161,7 +1165,7 @@ private fun DreamAnalysisCardPage(
                                     .padding(horizontal = 12.dp, vertical = 5.dp)
                             ) {
                                 Text(
-                                    text = "Duygu: ${analysis.sentiment}",
+                                    text = stringResource(R.string.dream_detail_sentiment_label, analysis.sentiment),
                                     color = Color.White,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Medium
@@ -1219,7 +1223,7 @@ private fun DreamAnalysisCardPage(
                                 ) {
                                     Text("🔮", fontSize = 16.sp)
                                     Text(
-                                        text = "Derinlemesine Analiz",
+                                        text = stringResource(R.string.dream_detail_deep_analysis_title),
                                         color = AstralGold,
                                         fontWeight = FontWeight.Bold,
                                         style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily)
@@ -1248,7 +1252,7 @@ private fun DreamAnalysisCardPage(
                                     strokeWidth = 2.dp
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text("Derin Analiz Hazırlanıyor...", color = Color.White, fontSize = 13.sp)
+                                Text(stringResource(R.string.dream_detail_deep_analysis_loading), color = Color.White, fontSize = 13.sp)
                             } else {
                                 Icon(
                                     Icons.Filled.AutoAwesome,
@@ -1257,7 +1261,7 @@ private fun DreamAnalysisCardPage(
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text("Derinlemesine Analiz İste", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                Text(stringResource(R.string.dream_detail_request_deep_analysis_btn), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp)
                             }
                         }
                     }
@@ -1301,7 +1305,7 @@ private fun DreamAnalysisCardPage(
                             fontSize = 13.sp
                         )
                         IconButton(onClick = onRefresh) {
-                            Icon(Icons.Filled.Refresh, contentDescription = "Yenile", tint = AstralGold)
+                            Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.refresh_button_desc), tint = AstralGold)
                         }
                     }
                 }

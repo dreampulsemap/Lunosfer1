@@ -1,6 +1,7 @@
 package io.lunosfer.dreamap.ui.screens
 
 import android.widget.Toast
+import io.lunosfer.dreamap.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,7 +20,9 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.ModeComment
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -103,7 +106,7 @@ fun PublicProfileScreen(
                             onClick = { viewModel.loadProfile(0) },
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = AstralGold)
                         ) {
-                            Text("Yeniden Dene")
+                            Text(stringResource(R.string.public_profile_retry_btn))
                         }
                     }
                 }
@@ -127,7 +130,7 @@ fun PublicProfileScreen(
                         // Dreams Section Header
                         item(span = { GridItemSpan(2) }) {
                             Text(
-                                text = "Rüyalar (${s.dreams.size})",
+                                text = stringResource(R.string.public_profile_dreams_tab, s.dreams.size),
                                 color = AstralGold,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
@@ -148,7 +151,7 @@ fun PublicProfileScreen(
                                             .padding(32.dp),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Text("Henüz paylaşılan rüya yok.", color = Color.Gray, fontSize = 13.sp)
+                                        Text(stringResource(R.string.public_profile_no_dreams), color = Color.Gray, fontSize = 13.sp)
                                     }
                                 }
                             }
@@ -178,7 +181,7 @@ fun PublicProfileScreen(
                                             colors = ButtonDefaults.outlinedButtonColors(contentColor = AstralGold),
                                             border = BorderStroke(1.dp, AstralGold)
                                         ) {
-                                            Text("Daha fazla yükle", fontSize = 12.sp)
+                                            Text(stringResource(R.string.public_profile_load_more), fontSize = 12.sp)
                                         }
                                     }
                                 }
@@ -255,7 +258,7 @@ private fun ProfileHeaderCard(
                 )
             }
 
-            // "Seni takip ediyor" Badge
+            // stringResource(R.string.public_profile_follows_you) Badge
             if (state.followsViewer) {
                 Box(
                     modifier = Modifier
@@ -265,7 +268,7 @@ private fun ProfileHeaderCard(
                         .padding(horizontal = 10.dp, vertical = 3.dp)
                 ) {
                     Text(
-                        text = "Seni takip ediyor",
+                        text = stringResource(R.string.public_profile_follows_you),
                         color = AetherViolet,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold
@@ -291,7 +294,7 @@ private fun ProfileHeaderCard(
                         .background(Void800)
                         .padding(horizontal = 16.dp, vertical = 6.dp)
                 ) {
-                    Text("Profilin", color = AstralGold, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.public_profile_is_you), color = AstralGold, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             } else {
                 when (state.friendshipStatus) {
@@ -307,7 +310,7 @@ private fun ProfileHeaderCard(
                         ) {
                             Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(6.dp))
-                            Text("Takipte", fontSize = 13.sp)
+                            Text(stringResource(R.string.public_profile_following), fontSize = 13.sp)
                         }
                     }
                     "pending" -> {
@@ -320,7 +323,7 @@ private fun ProfileHeaderCard(
                             ),
                             border = BorderStroke(1.dp, Color.Gray)
                         ) {
-                            Text("Takip İsteği Gönderildi (Bekliyor)", fontSize = 12.sp)
+                            Text(stringResource(R.string.public_profile_follow_pending), fontSize = 12.sp)
                         }
                     }
                     else -> { // null
@@ -330,7 +333,7 @@ private fun ProfileHeaderCard(
                         ) {
                             Icon(Icons.Default.PersonAdd, contentDescription = null, tint = Void950, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(6.dp))
-                            Text("Takip Et", color = Void950, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                            Text(stringResource(R.string.public_profile_follow_btn), color = Void950, fontWeight = FontWeight.Bold, fontSize = 13.sp)
                         }
                     }
                 }

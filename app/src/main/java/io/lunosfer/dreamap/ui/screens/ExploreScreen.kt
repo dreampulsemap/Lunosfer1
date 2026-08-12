@@ -164,7 +164,7 @@ private fun ExploreError(message: String, onRetry: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Keşfet yüklenemedi", color = Color.White, style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily))
+        Text(stringResource(R.string.explore_failed), color = Color.White, style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily))
         Spacer(Modifier.height(8.dp))
         Text(message, color = Color(0xFF94A3B8), style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
         Spacer(Modifier.height(16.dp))
@@ -175,7 +175,7 @@ private fun ExploreError(message: String, onRetry: () -> Unit) {
         ) {
             Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(8.dp))
-            Text("Tekrar Dene")
+            Text(stringResource(R.string.explore_retry))
         }
     }
 }

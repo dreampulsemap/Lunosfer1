@@ -50,7 +50,7 @@ class DiaryStoryViewerViewModel(
             _state.value = DiaryStoryViewerUiState.Loading
             repository.getEntriesForUser(userId).onSuccess { res ->
                 if (res.entries.isEmpty()) {
-                    _state.value = DiaryStoryViewerUiState.Error("Bu kullanıcının günce girdisi bulunamadı.")
+                    _state.value = DiaryStoryViewerUiState.Error(io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_diary_not_found))
                 } else {
                     _state.value = DiaryStoryViewerUiState.Content(
                         owner = res.owner,
@@ -61,7 +61,7 @@ class DiaryStoryViewerViewModel(
                     startTimer()
                 }
             }.onFailure { err ->
-                _state.value = DiaryStoryViewerUiState.Error(err.message ?: "Hikayeler yüklenemedi")
+                _state.value = DiaryStoryViewerUiState.Error(err.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_stories_load))
             }
         }
     }
@@ -152,7 +152,7 @@ class DiaryStoryViewerViewModel(
                     startTimer()
                 }
             }.onFailure { err ->
-                _state.value = current.copy(actionError = err.message ?: "Silinemedi")
+                _state.value = current.copy(actionError = err.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_delete_failed))
                 startTimer()
             }
         }

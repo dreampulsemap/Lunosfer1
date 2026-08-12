@@ -49,7 +49,7 @@ class VisionViewModel(
         viewModelScope.launch {
             repository.loadFirstPage()
                 .onSuccess { _state.value = UiState.Success(it) }
-                .onFailure { _state.value = UiState.Error(it.message ?: "Bilinmeyen hata") }
+                .onFailure { _state.value = UiState.Error(it.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_unknown)) }
         }
     }
 
@@ -62,7 +62,7 @@ class VisionViewModel(
                         if (res.error == "already_used_today") {
                             _compassState.value = CompassUiState.AlreadyUsedToday
                         } else {
-                            _compassState.value = CompassUiState.Error(res.error ?: "Pusula kullanılamadı")
+                            _compassState.value = CompassUiState.Error(res.error ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_compass_failed))
                         }
                     } else if (res.data != null) {
                         _compassState.value = CompassUiState.Success(
@@ -79,7 +79,7 @@ class VisionViewModel(
                     if (msg.contains("429") || msg.contains("already_used")) {
                         _compassState.value = CompassUiState.AlreadyUsedToday
                     } else {
-                        _compassState.value = CompassUiState.Error("Günlük pusula alınamadı")
+                        _compassState.value = CompassUiState.Error(io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_daily_compass_failed))
                     }
                 }
         }

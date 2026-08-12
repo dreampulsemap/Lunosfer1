@@ -278,7 +278,7 @@ fun CreateDreamScreen(navController: NavController) {
                             value = query,
                             onValueChange = { query = it },
                             modifier = Modifier.fillMaxWidth(),
-                            placeholder = { Text("Search Pixabay...") },
+                            placeholder = { Text(stringResource(R.string.create_dream_pixabay_search)) },
                             leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null, tint = Color.Gray) },
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = AstralGold,
@@ -448,7 +448,7 @@ fun CreateDreamScreen(navController: NavController) {
                 ) {
                     Icon(Icons.Filled.Image, contentDescription = null, tint = AstralGold)
                     Spacer(Modifier.width(8.dp))
-                    Text("Pixabay'dan Seç", color = AstralGold)
+                    Text(stringResource(R.string.create_dream_pixabay_btn), color = AstralGold)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -519,7 +519,7 @@ val charCount = content.length
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Add tags (press enter or comma)", color = Color.Gray) },
+                placeholder = { Text(stringResource(R.string.create_dream_tags_placeholder), color = Color.Gray) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(

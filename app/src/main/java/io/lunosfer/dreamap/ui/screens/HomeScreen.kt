@@ -141,13 +141,13 @@ private fun HomeFeedList(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Henüz akışında bir şey yok",
+                        text = stringResource(R.string.home_feed_empty_title),
                         color = Color.White,
                         style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily)
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = "Bir rüya kaydet ya da bir vizyon oluştur, burada görünsün.",
+                        text = stringResource(R.string.home_feed_empty_desc),
                         color = Color(0xFF94A3B8),
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Center
@@ -158,7 +158,7 @@ private fun HomeFeedList(
         item {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    text = "HOŞ GELDİN",
+                    text = stringResource(R.string.home_welcome_title),
                     color = AstralGold.copy(alpha = 0.8f),
                     style = MaterialTheme.typography.labelLarge.copy(
                         letterSpacing = 2.sp,
@@ -268,13 +268,13 @@ private fun FeedCardOwnerHeader(
     }
 }
 
-private fun getSlideTitle(pageIndex: Int, localeLanguage: String): String {
-    val isTr = localeLanguage == "tr"
+@Composable
+fun getHomeSlideTitle(pageIndex: Int): String {
     return when (pageIndex) {
-        0 -> if (isTr) "Rüya Görseli" else "Dream Image"
-        1 -> if (isTr) "Rüya Metni" else "Dream Text"
-        2 -> if (isTr) "AI Analizi" else "AI Analysis"
-        else -> if (isTr) "Detay" else "Detail"
+        0 -> stringResource(R.string.dream_slide_title_0)
+        1 -> stringResource(R.string.dream_slide_title_1)
+        2 -> stringResource(R.string.dream_slide_title_2)
+        else -> ""
     }
 }
 
@@ -306,7 +306,7 @@ private fun DreamFeedCard(dream: Dream, onDreamClick: (Long) -> Unit) {
             )
 
             // Top-left page indicator text (e.g., "Rüya Görseli (1/3)") in gray monospace style
-            val slideLabel = getSlideTitle(pagerState.currentPage, currentLocale)
+            val slideLabel = getHomeSlideTitle(pagerState.currentPage)
             Text(
                 text = "$slideLabel (${pagerState.currentPage + 1}/3)",
                 color = Color(0xFF94A3B8),
@@ -353,7 +353,7 @@ private fun DreamFeedCard(dream: Dream, onDreamClick: (Long) -> Unit) {
                 }
 
                 Text(
-                    text = "Detay →",
+                    text = stringResource(R.string.home_feed_detail_btn),
                     color = AstralGold.copy(alpha = 0.9f),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
@@ -463,8 +463,7 @@ private fun DreamImagePage(dream: Dream, onDreamClick: (Long) -> Unit) {
 
 @Composable
 private fun DreamTextPage(dream: Dream) {
-    val locale = Locale.getDefault().language
-    val titleLabel = getSlideTitle(1, locale)
+    val titleLabel = getHomeSlideTitle(1)
 
     Card(
         modifier = Modifier.fillMaxSize(),
@@ -526,9 +525,9 @@ private fun DreamTextPage(dream: Dream) {
 
 @Composable
 private fun DreamAnalysisPage(dream: Dream) {
-    val locale = Locale.getDefault().language
-    val titleLabel = getSlideTitle(2, locale)
+    val titleLabel = getHomeSlideTitle(2)
     val analysis = dream.aiJungianAnalysis
+    val locale = Locale.getDefault().language
 
     Card(
         modifier = Modifier.fillMaxSize(),
@@ -627,7 +626,7 @@ private fun DreamAnalysisPage(dream: Dream) {
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "Duygu: ${dream.userSelectedSentiment}",
+                        text = stringResource(R.string.home_feed_sentiment_label, dream.userSelectedSentiment),
                         color = Color.White,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium
@@ -638,7 +637,7 @@ private fun DreamAnalysisPage(dream: Dream) {
             val archetypes = analysis?.archetypes ?: dream.aiArchetypes
             if (!archetypes.isNullOrEmpty()) {
                 Text(
-                    text = "Arketipler",
+                    text = stringResource(R.string.home_feed_archetypes_label),
                     color = Color(0xFF94A3B8),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold
@@ -666,7 +665,7 @@ private fun VisionFeedCard(goal: Goal) {
             FeedCardOwnerHeader(
                 ownerName = goal.owner?.nameOrFallback ?: "Bilinmeyen",
                 avatarUrl = goal.owner?.avatarUrl,
-                visibility = "VİZYON"
+                visibility = stringResource(R.string.home_feed_vision_badge)
             )
 
             Box {
@@ -718,7 +717,7 @@ private fun VisionFeedCard(goal: Goal) {
                             .background(AstralGold)
                     )
                 }
-                Text("%${goal.completionPercentage ?: 0} tamamlandı", color = Color(0xFF94A3B8), fontSize = 11.sp)
+                Text(stringResource(R.string.home_feed_completion_text, goal.completionPercentage ?: 0), color = Color(0xFF94A3B8), fontSize = 11.sp)
             }
         }
     }

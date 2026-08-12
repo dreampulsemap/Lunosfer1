@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatDelegate
+import io.lunosfer.dreamap.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +25,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -111,7 +114,7 @@ fun ProfileScreen(
                         onClick = { viewModel.loadData() },
                         colors = ButtonDefaults.buttonColors(containerColor = AstralGold)
                     ) {
-                        Text("Yeniden Dene", color = Void950)
+                        Text(stringResource(R.string.profile_retry_btn), color = Void950)
                     }
                 }
             }
@@ -125,7 +128,7 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     Text(
-                        text = "Profil & Ayarlar",
+                        text = stringResource(R.string.profile_title),
                         color = AstralGold,
                         style = MaterialTheme.typography.headlineMedium.copy(fontFamily = SerifFontFamily)
                     )
@@ -158,7 +161,7 @@ fun ProfileScreen(
                     ) {
                         Icon(Icons.Default.PersonSearch, contentDescription = null, tint = AstralGold)
                         Spacer(Modifier.width(8.dp))
-                        Text("Arkadaş Ara & Takip Et", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.profile_find_friends_btn), color = Color.White, fontWeight = FontWeight.Bold)
                     }
 
                     // Language Selection Section
@@ -175,7 +178,7 @@ fun ProfileScreen(
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             Text(
-                                text = "Uygulama Dili",
+                                text = stringResource(R.string.profile_language_label),
                                 color = AstralGold,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold
@@ -234,7 +237,7 @@ fun ProfileScreen(
                     ) {
                         Icon(Icons.Default.Logout, contentDescription = null, tint = Color.White)
                         Spacer(Modifier.width(8.dp))
-                        Text("Çıkış Yap", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.profile_logout_btn), color = Color.White, fontWeight = FontWeight.Bold)
                     }
 
                     Spacer(Modifier.height(16.dp))
@@ -329,7 +332,7 @@ private fun ProfileSummaryCard(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Lock, contentDescription = null, tint = AstralGold, modifier = Modifier.size(12.dp))
                         Spacer(Modifier.width(4.dp))
-                        Text("Gizli Hesap", color = AstralGold, fontSize = 11.sp)
+                        Text(stringResource(R.string.profile_private_badge), color = AstralGold, fontSize = 11.sp)
                     }
                 }
             }
@@ -342,7 +345,7 @@ private fun ProfileSummaryCard(
             ) {
                 Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(14.dp))
                 Spacer(Modifier.width(4.dp))
-                Text("Düzenle", fontSize = 12.sp)
+                Text(stringResource(R.string.profile_edit_action), fontSize = 12.sp)
             }
         }
     }
@@ -388,19 +391,19 @@ private fun PremiumStatusCard(status: PremiumStatusResponse) {
             Column(modifier = Modifier.weight(1f)) {
                 if (status.isPremium) {
                     Text(
-                        text = "Premium Üye",
+                        text = stringResource(R.string.profile_premium_badge),
                         color = AstralGold,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Tüm analizler ve gelişmiş özellikler aktif.",
+                        text = stringResource(R.string.profile_premium_desc),
                         color = Color.LightGray,
                         fontSize = 12.sp
                     )
                 } else {
                     Text(
-                        text = "Ücretsiz Üyelik",
+                        text = stringResource(R.string.profile_free_badge),
                         color = Color.White,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
@@ -408,14 +411,14 @@ private fun PremiumStatusCard(status: PremiumStatusResponse) {
                     if (!status.canPickVideo) {
                         val formattedDate = formatNextAvailableDate(status.nextAvailableAt)
                         Text(
-                            text = "Ücretsiz video hakkı: $formattedDate tekrar açılacak",
+                            text = stringResource(R.string.profile_free_video_wait, formattedDate),
                             color = Color(0xFFF87171),
                             fontSize = 12.sp,
                             lineHeight = 16.sp
                         )
                     } else {
                         Text(
-                            text = "Ücretsiz video analizi hakkınız kullanılabilir.",
+                            text = stringResource(R.string.profile_free_video_ready),
                             color = Color(0xFF4ADE80),
                             fontSize = 12.sp
                         )
@@ -478,7 +481,7 @@ private fun EditProfileDialog(
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 Text(
-                    text = "Profili Düzenle",
+                    text = stringResource(R.string.profile_edit_btn),
                     color = AstralGold,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -489,7 +492,7 @@ private fun EditProfileDialog(
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it },
-                    label = { Text("Kullanıcı Adı (3-32 karakter)", color = Color.Gray) },
+                    label = { Text(stringResource(R.string.profile_edit_username_label), color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -504,7 +507,7 @@ private fun EditProfileDialog(
                 OutlinedTextField(
                     value = displayName,
                     onValueChange = { displayName = it },
-                    label = { Text("Görünen Ad (max 60)", color = Color.Gray) },
+                    label = { Text(stringResource(R.string.profile_edit_display_name_label), color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -519,7 +522,7 @@ private fun EditProfileDialog(
                 OutlinedTextField(
                     value = avatarUrl,
                     onValueChange = { avatarUrl = it },
-                    label = { Text("Profil Resmi URL", color = Color.Gray) },
+                    label = { Text(stringResource(R.string.profile_edit_avatar_url_label), color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -541,8 +544,8 @@ private fun EditProfileDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column {
-                        Text("Gizli Profil", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                        Text("Sadece onayladığın kişiler rüyalarını görebilir", color = Color.Gray, fontSize = 11.sp)
+                        Text(stringResource(R.string.profile_edit_private_title), color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.profile_edit_private_desc), color = Color.Gray, fontSize = 11.sp)
                     }
                     Switch(
                         checked = isPrivate,
@@ -552,7 +555,7 @@ private fun EditProfileDialog(
                 }
 
                 // Gender Selection
-                Text("Cinsiyet", color = AstralGold, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.profile_edit_gender_label), color = AstralGold, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     genders.forEach { g ->
                         Row(
@@ -587,7 +590,7 @@ private fun EditProfileDialog(
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Gray),
                         border = BorderStroke(1.dp, Void800)
                     ) {
-                        Text("İptal")
+                        Text(stringResource(R.string.profile_edit_cancel))
                     }
 
                     Button(
@@ -601,7 +604,7 @@ private fun EditProfileDialog(
                         if (isSaving) {
                             CircularProgressIndicator(modifier = Modifier.size(16.dp), color = Void950)
                         } else {
-                            Text("Kaydet", color = Void950, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.profile_edit_save), color = Void950, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -675,13 +678,13 @@ private fun NotificationPermissionBanner() {
                 )
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Bildirimler Kapalı",
+                        text = stringResource(R.string.profile_notifications_off),
                         color = Color.White,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Mesaj ve etkileşim bildirimlerini almak için Ayarlar'a git.",
+                        text = stringResource(R.string.profile_notifications_desc),
                         color = Color.LightGray,
                         fontSize = 12.sp
                     )

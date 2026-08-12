@@ -32,7 +32,7 @@ class DiaryFeedViewModel(
             repository.getFeed().onSuccess { rings ->
                 _state.value = DiaryFeedUiState.Success(rings)
             }.onFailure { err ->
-                _state.value = DiaryFeedUiState.Error(err.message ?: "Günce akışı yüklenemedi")
+                _state.value = DiaryFeedUiState.Error(err.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_diary_feed_load))
             }
         }
     }

@@ -163,7 +163,7 @@ fun ReferralCard(
                             OutlinedTextField(
                                 value = inputCode,
                                 onValueChange = { inputCode = it.uppercase() },
-                                placeholder = { Text("KOD123", color = Color.Gray, fontSize = 12.sp) },
+                                placeholder = { Text(stringResource(R.string.referral_placeholder), color = Color.Gray, fontSize = 12.sp) },
                                 modifier = Modifier.weight(1f),
                                 singleLine = true,
                                 shape = RoundedCornerShape(12.dp),

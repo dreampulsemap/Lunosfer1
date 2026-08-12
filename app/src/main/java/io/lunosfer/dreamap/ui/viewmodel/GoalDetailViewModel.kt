@@ -63,7 +63,7 @@ class GoalDetailViewModel(
                 }.onSuccess { goal ->
                     setGoalSuccess(goal)
                 }.onFailure { err ->
-                    _state.value = GoalDetailUiState.Error("Vizyon bulunamadı: ${err.message}")
+                    _state.value = GoalDetailUiState.Error(io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_vision_not_found, err.message ?: ""))
                 }
             }
         }

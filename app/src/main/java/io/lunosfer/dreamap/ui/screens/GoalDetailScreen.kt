@@ -1,6 +1,7 @@
 package io.lunosfer.dreamap.ui.screens
 
 import android.widget.Toast
+import io.lunosfer.dreamap.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,7 +20,9 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.ModeComment
 import androidx.compose.material3.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -225,7 +228,7 @@ private fun GoalDetailContent(
             }
 
             Text(
-                text = "Vizyon Detayı",
+                text = stringResource(R.string.goal_detail_title),
                 color = AstralGold,
                 style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily)
             )
@@ -464,7 +467,7 @@ private fun GoalDetailContent(
                     ) {
                         Icon(Icons.Filled.CalendarToday, contentDescription = null, tint = AstralGold, modifier = Modifier.size(14.dp))
                         Text(
-                            text = "Hedef Tarih: ${goal.targetDate.take(10)}",
+                            text = stringResource(R.string.goal_detail_target_date, goal.targetDate.take(10)),
                             color = Color(0xFF94A3B8),
                             fontSize = 12.sp
                         )
@@ -652,7 +655,7 @@ private fun GoalCommentsView(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Yorumlar (${comments.size})",
+                text = stringResource(R.string.goal_detail_comments_count, comments.size),
                 color = AstralGold,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
@@ -665,7 +668,7 @@ private fun GoalCommentsView(
                 )
             } else if (comments.isEmpty()) {
                 Text(
-                    text = "Henüz yorum yok. İlk yorumu siz yazın!",
+                    text = stringResource(R.string.goal_detail_no_comments),
                     color = Color.Gray,
                     fontSize = 12.sp
                 )

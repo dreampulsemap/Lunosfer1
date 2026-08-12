@@ -44,7 +44,7 @@ class ReferralViewModel(
                     _uiState.value = ReferralUiState.Success(stats)
                 }
                 .onFailure { err ->
-                    _uiState.value = ReferralUiState.Error(err.message ?: "Referans istatistikleri alınamadı")
+                    _uiState.value = ReferralUiState.Error(err.message ?: io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.error_referral_stats))
                 }
         }
     }
@@ -60,7 +60,7 @@ class ReferralViewModel(
                 .onSuccess { res ->
                     _isClaiming.value = false
                     val awarded = res.manaAwarded
-                    val msg = res.message ?: if (awarded > 0) "+$awarded Mana kazandınız!" else "Referans kodu uygulandı!"
+                    val msg = res.message ?: if (awarded > 0) io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.msg_mana_awarded, awarded) else io.lunosfer.dreamap.DreamapApp.instance.getString(io.lunosfer.dreamap.R.string.msg_referral_applied)
                     _claimMessage.value = msg
                     loadStats()
                 }
