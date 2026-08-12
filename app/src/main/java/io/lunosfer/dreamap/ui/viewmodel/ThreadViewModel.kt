@@ -98,13 +98,29 @@ class ThreadViewModel(
         }
     }
 
-    fun sendMessage(content: String) {
-        val trimmed = content.trim()
-        if (trimmed.isEmpty() || _state.value.isSending) return
+    fun sendMessage(
+        content: String?,
+        attachmentUrl: String? = null,
+        attachmentType: String? = null,
+        attachmentName: String? = null,
+        attachmentMime: String? = null,
+        attachmentSize: Long? = null
+    ) {
+        val trimmed = content?.trim()
+        if ((trimmed == null || trimmed.isEmpty()) && attachmentUrl == null) return
+        if (_state.value.isSending) return
 
         _state.value = _state.value.copy(isSending = true, sendError = null)
         viewModelScope.launch {
-            repository.sendMessage(otherUserId, trimmed)
+            repository.sendMessage(
+                recipientId = otherUserId,
+                content = if (trimmed.isNullOrEmpty()) null else trimmed,
+                attachmentUrl = attachmentUrl,
+                attachmentType = attachmentType,
+                attachmentName = attachmentName,
+                attachmentMime = attachmentMime,
+                attachmentSize = attachmentSize
+            )
                 .onSuccess { sentMessage ->
                     _state.value = _state.value.copy(
                         isSending = false,

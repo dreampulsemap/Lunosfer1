@@ -33,9 +33,28 @@ class MessagesRepository {
         api.getThread(otherUserId = otherUserId, before = before)
     }
 
-    suspend fun sendMessage(recipientId: String, content: String): Result<Message> = runCatching {
+    suspend fun sendMessage(
+        recipientId: String,
+        content: String?,
+        attachmentUrl: String? = null,
+        attachmentType: String? = null,
+        attachmentName: String? = null,
+        attachmentMime: String? = null,
+        attachmentSize: Long? = null
+    ): Result<Message> = runCatching {
         val lang = Locale.getDefault().language
-        api.sendMessage(SendMessageRequest(recipientId = recipientId, content = content, lang = lang)).message
+        api.sendMessage(
+            SendMessageRequest(
+                recipientId = recipientId,
+                content = content,
+                lang = lang,
+                attachmentUrl = attachmentUrl,
+                attachmentType = attachmentType,
+                attachmentName = attachmentName,
+                attachmentMime = attachmentMime,
+                attachmentSize = attachmentSize
+            )
+        ).message
     }
 
     suspend fun reactMessage(messageId: String, reaction: String): Result<Unit> = runCatching {

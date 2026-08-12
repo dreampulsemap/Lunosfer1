@@ -1,7 +1,7 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Lunosfer</string>
-    <string name="nav_home">Start</string>
+    <string name="nav_home">Startseite</string>
     <string name="nav_explore">Entdecken</string>
     <string name="nav_vision">Vision</string>
     <string name="nav_messages">Nachrichten</string>
@@ -18,8 +18,46 @@
     <string name="auth_username_required">Benutzername ist erforderlich.</string>
     <string name="auth_login">Anmelden</string>
     <string name="auth_register">Registrieren</string>
-    <string name="auth_loading">Wird geladen...</string>
-    <string name="auth_success">Registrierung erfolgreich! Bitte prüfe deine E-Mail.</string>
-    <string name="auth_no_account">Noch kein Konto? Registriere dich</string>
-    <string name="auth_has_account">Schon ein Konto? Anmelden</string>
-<string name="dream_addTitle">Teile deinen Traum</string><string name="dream_placeholder">Schreibe deinen Traum so detailliert auf, wie du ihn erinnerst...</string><string name="dream_location">Ort</string><string name="dream_public">Öffentlich</string><string name="dream_friends">Nur Freunde</string><string name="dream_private">Privat</string><string name="dream_shareInFeed">Im öffentlichen Feed teilen</string><string name="dream_submit">Traum absenden</string><string name="dream_validationContent">Bitte gib deinen Traumtext ein.</string><string name="dream_createFailed">Traum konnte nicht erstellt werden.</string><string name="dream_unknownLocation">Unbekannter Ort</string><string name="dream_emotion_joy">Freude</string><string name="dream_emotion_peace">Frieden</string><string name="dream_emotion_love">Liebe</string><string name="dream_emotion_hope">Hoffnung</string><string name="dream_emotion_awe">Ehrfurcht</string><string name="dream_emotion_surprise">Überraschung</string><string name="dream_emotion_curiosity">Neugier</string><string name="dream_emotion_confusion">Verwirrung</string><string name="dream_emotion_fear">Angst</string><string name="dream_emotion_anxiety">Anspannung</string><string name="dream_emotion_sadness">Traurigkeit</string><string name="dream_emotion_loneliness">Einsamkeit</string><string name="dream_emotion_anger">Wut</string><string name="dream_emotion_shame">Scham</string><string name="dream_emotion_disgust">Ekel</string><string name="dream_emotion_relief">Erleichterung</string><string name="dream_slide_title_0">Traumbild</string><string name="dream_slide_title_1">Traumtext</string><string name="dream_slide_title_2">KI-Analyse</string></resources>
+    <string name="auth_loading">Laden...</string>
+    <string name="auth_success">Registrierung erfolgreich! Bitte prüfen Sie Ihre E-Mails.</string>
+    <string name="auth_no_account">Noch kein Konto? Registrieren</string>
+    <string name="auth_has_account">Bereits ein Konto? Anmelden</string>
+    <string name="action_login_google">Mit Google fortfahren</string>
+    <string name="action_login_github">Mit GitHub fortfahren</string>
+    <string name="dream_addTitle">Teile deinen Traum</string>
+    <string name="dream_placeholder">Schreibe deinen Traum so detailliert wie möglich...</string>
+    <string name="dream_location">Standort</string>
+    <string name="dream_public">Öffentlich</string>
+    <string name="dream_friends">Nur Freunde</string>
+    <string name="dream_private">Privat</string>
+    <string name="dream_shareInFeed">Im öffentlichen Feed teilen</string>
+    <string name="dream_submit">Traum absenden</string>
+    <string name="dream_validationContent">Bitte gib deinen Traumtext ein.</string>
+    <string name="dream_createFailed">Traum konnte nicht erstellt werden.</string>
+    <string name="dream_unknownLocation">Unbekannter Standort</string>
+    <string name="dream_emotion_joy">Freude</string>
+    <string name="dream_emotion_peace">Frieden</string>
+    <string name="dream_emotion_love">Liebe</string>
+    <string name="dream_emotion_hope">Hoffnung</string>
+    <string name="dream_emotion_awe">Ehrfurcht</string>
+    <string name="dream_emotion_surprise">Überraschung</string>
+    <string name="dream_emotion_curiosity">Neugier</string>
+    <string name="dream_emotion_confusion">Verwirrung</string>
+    <string name="dream_emotion_fear">Angst</string>
+    <string name="dream_emotion_anxiety">Angstzustand</string>
+    <string name="dream_emotion_sadness">Traurigkeit</string>
+    <string name="dream_emotion_loneliness">Einsamkeit</string>
+    <string name="dream_emotion_anger">Wut</string>
+    <string name="dream_emotion_shame">Scham</string>
+    <string name="dream_emotion_disgust">Ekel</string>
+    <string name="dream_emotion_relief">Erleichterung</string>
+    <string name="dream_analysis_pending">Ihre Analyse wird vorbereitet...</string>
+    <string name="dream_analysis_failed">Traumanalyse fehlgeschlagen.</string>
+    <string name="dream_analysis_retry">Erneut versuchen</string>
+    <string name="dream_analysis_title">KI-Analyse</string>
+    <string name="dream_slide_title_0">Traumbild</string>
+    <string name="dream_slide_title_1">Traumtext</string>
+    <string name="dream_slide_title_2">KI-Analyse</string>
+    <string name="retry">Erneut versuchen</string>
+    <string name="error_feed">Feed konnte nicht geladen werden</string>
+</resources>

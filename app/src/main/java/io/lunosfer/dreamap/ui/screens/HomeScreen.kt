@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import androidx.compose.ui.res.stringResource
+import io.lunosfer.dreamap.R
 import io.lunosfer.dreamap.data.model.Dream
 import io.lunosfer.dreamap.data.model.FeedItem
 import io.lunosfer.dreamap.data.model.Goal
@@ -46,15 +48,27 @@ import io.lunosfer.dreamap.ui.viewmodel.UiState
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+import io.lunosfer.dreamap.ui.components.DiaryRingsBar
+
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = viewModel(), onDreamClick: (Long) -> Unit = {}) {
+fun HomeScreen(
+    viewModel: HomeViewModel = viewModel(),
+    onDreamClick: (Long) -> Unit = {},
+    onOpenComposer: () -> Unit = {},
+    onOpenViewer: (String) -> Unit = {}
+) {
     val state by viewModel.state.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize().background(Void950)) {
         when (val current = state) {
             is UiState.Loading -> HomeLoading()
             is UiState.Error -> HomeError(message = current.message, onRetry = viewModel::retry)
-            is UiState.Success -> HomeFeedList(items = current.data, onDreamClick = onDreamClick)
+            is UiState.Success -> HomeFeedList(
+                items = current.data,
+                onDreamClick = onDreamClick,
+                onOpenComposer = onOpenComposer,
+                onOpenViewer = onOpenViewer
+            )
         }
     }
 }
@@ -74,7 +88,7 @@ private fun HomeError(message: String, onRetry: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Akış yüklenemedi",
+            text = stringResource(R.string.error_feed),
             color = Color.White,
             style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily)
         )
@@ -93,40 +107,54 @@ private fun HomeError(message: String, onRetry: () -> Unit) {
         ) {
             Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(8.dp))
-            Text("Tekrar Dene")
+            Text(stringResource(R.string.retry))
         }
     }
 }
 
 @Composable
-private fun HomeFeedList(items: List<FeedItem>, onDreamClick: (Long) -> Unit) {
-    if (items.isEmpty()) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "Henüz akışında bir şey yok",
-                color = Color.White,
-                style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily)
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "Bir rüya kaydet ya da bir vizyon oluştur, burada görünsün.",
-                color = Color(0xFF94A3B8),
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center
-            )
-        }
-        return
-    }
-
+private fun HomeFeedList(
+    items: List<FeedItem>,
+    onDreamClick: (Long) -> Unit,
+    onOpenComposer: () -> Unit,
+    onOpenViewer: (String) -> Unit
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
+        item {
+            DiaryRingsBar(
+                onOpenComposer = onOpenComposer,
+                onOpenViewer = onOpenViewer
+            )
+        }
+
+        if (items.isEmpty()) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 40.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Henüz akışında bir şey yok",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily)
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "Bir rüya kaydet ya da bir vizyon oluştur, burada görünsün.",
+                        color = Color(0xFF94A3B8),
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
         item {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(

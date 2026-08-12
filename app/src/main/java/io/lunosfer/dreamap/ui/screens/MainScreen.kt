@@ -31,9 +31,25 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
 
 @Composable
-fun MainScreen(navController: NavHostController = rememberNavController()) {
+fun MainScreen(
+    navController: NavHostController = rememberNavController(),
+    pendingRoute: String? = null,
+    onRouteHandled: (() -> Unit)? = null
+) {
     val sessionStatus by supabaseClient.auth.sessionStatus.collectAsState(initial = SessionStatus.Initializing)
     val isLoggedIn = sessionStatus is SessionStatus.Authenticated
+
+    LaunchedEffect(isLoggedIn, pendingRoute) {
+        if (isLoggedIn && !pendingRoute.isNullOrBlank()) {
+            try {
+                navController.navigate(pendingRoute)
+            } catch (e: Exception) {
+                android.util.Log.e("MainScreen", "Error navigating to pending route: $pendingRoute", e)
+            } finally {
+                onRouteHandled?.invoke()
+            }
+        }
+    }
 
     if (sessionStatus is SessionStatus.Initializing) {
         Box(modifier = Modifier.fillMaxSize().background(Void950), contentAlignment = Alignment.Center) {
@@ -45,11 +61,23 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Kendi TopAppBar'ını çizen ekranlar (geri oku + başlık) dış Scaffold'un
-    // genel TopBar'ıyla çakışır — bu yüzden bunlar için dış bar'lar gizlenir.
-    // Not: CreateDreamScreen ve ProfileScreen'de de aynı çakışma zaten
-    // mevcut (bu listeye dahil değiller, kapsam dışı — ayrı bir düzeltme).
-    val fullScreenRoutes = setOf(Screen.DreamDetail.route, Screen.Thread.route)
+    var unreadCount by remember { mutableStateOf(0) }
+
+    LaunchedEffect(isLoggedIn, currentRoute) {
+        if (isLoggedIn) {
+            io.lunosfer.dreamap.data.repository.NotificationsRepository().getNotifications().onSuccess { res ->
+                unreadCount = res.unreadCount
+            }
+        }
+    }
+
+    val fullScreenRoutes = setOf(
+        Screen.DreamDetail.route,
+        Screen.Thread.route,
+        Screen.AddFriend.route,
+        Screen.Notifications.route,
+        Screen.PublicProfile.route
+    )
     val showTopBottomBars = currentRoute != Screen.Auth.route && currentRoute !in fullScreenRoutes
 
     Scaffold(
@@ -57,8 +85,11 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             if (showTopBottomBars) {
                 TopBar(
                     isLoggedIn = isLoggedIn,
+                    unreadCount = unreadCount,
                     onLoginClick = { navController.navigate(Screen.Auth.route) },
-                    onProfileClick = { navController.navigate(Screen.Profile.route) }
+                    onProfileClick = { navController.navigate(Screen.Profile.route) },
+                    onNotificationsClick = { navController.navigate(Screen.Notifications.route) },
+                    onSpiritualToolsClick = { navController.navigate(Screen.SpiritualTools.route) }
                 )
             }
         },
@@ -81,9 +112,19 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                     }
                 })
             }
-            composable(Screen.Home.route) { HomeScreen(onDreamClick = { id -> navController.navigate(Screen.DreamDetail.createRoute(id)) }) }
-            composable(Screen.Explore.route) { ExploreScreen() }
-            composable(Screen.Vision.route) { VisionScreen() }
+            composable(Screen.Home.route) {
+                HomeScreen(
+                    onDreamClick = { id -> navController.navigate(Screen.DreamDetail.createRoute(id)) },
+                    onOpenComposer = { navController.navigate(Screen.DiaryComposer.route) },
+                    onOpenViewer = { userId -> navController.navigate(Screen.DiaryStoryViewer.routeFor(userId)) }
+                )
+            }
+            composable(Screen.Explore.route) {
+                ExploreScreen(onGoalClick = { goalId -> navController.navigate(Screen.GoalDetail.createRoute(goalId)) })
+            }
+            composable(Screen.Vision.route) {
+                VisionScreen(onGoalClick = { goalId -> navController.navigate(Screen.GoalDetail.createRoute(goalId)) })
+            }
             composable(Screen.Messages.route) { 
                 MessagesScreen(navController = navController, onLoginClick = { navController.navigate(Screen.Auth.route) }) 
             }
@@ -92,14 +133,81 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 ThreadScreen(otherUserId = otherUserId, navController = navController)
             }
             composable(Screen.CreateDream.route) { CreateDreamScreen(navController) }
-            composable(Screen.CreateVision.route) { PlaceholderScreen(stringResource(R.string.nav_new_vision)) }
-            composable("dream/{dreamId}", arguments = listOf(androidx.navigation.navArgument("dreamId") { type = androidx.navigation.NavType.LongType })) { backStackEntry -> val dreamId = backStackEntry.arguments?.getLong("dreamId") ?: return@composable; DreamDetailScreen(dreamId = dreamId, onBack = { navController.popBackStack() }) }
+            composable(Screen.CreateVision.route) { CreateVisionScreen(navController) }
+            composable(
+                "dream/{dreamId}",
+                arguments = listOf(androidx.navigation.navArgument("dreamId") { type = androidx.navigation.NavType.LongType })
+            ) { backStackEntry ->
+                val dreamId = backStackEntry.arguments?.getLong("dreamId") ?: return@composable
+                DreamDetailScreen(
+                    dreamId = dreamId,
+                    onBack = { navController.popBackStack() },
+                    onUserClick = { userId -> navController.navigate(Screen.PublicProfile.createRoute(userId)) }
+                )
+            }
+            composable(
+                "goal/{goalId}",
+                arguments = listOf(androidx.navigation.navArgument("goalId") { type = androidx.navigation.NavType.StringType })
+            ) { backStackEntry ->
+                val goalId = backStackEntry.arguments?.getString("goalId") ?: return@composable
+                GoalDetailScreen(
+                    goalId = goalId,
+                    onBack = { navController.popBackStack() },
+                    onUserClick = { userId -> navController.navigate(Screen.PublicProfile.createRoute(userId)) }
+                )
+            }
             composable(Screen.Profile.route) {
-                ProfileScreen(onLogout = {
-                    navController.navigate(Screen.Auth.route) {
-                        popUpTo(0)
+                ProfileScreen(
+                    onLogout = {
+                        navController.navigate(Screen.Auth.route) {
+                            popUpTo(0)
+                        }
+                    },
+                    onAddFriendClick = {
+                        navController.navigate(Screen.AddFriend.route)
                     }
-                })
+                )
+            }
+            composable(Screen.AddFriend.route) {
+                AddFriendScreen(
+                    onBack = { navController.popBackStack() },
+                    onUserClick = { userId -> navController.navigate(Screen.PublicProfile.createRoute(userId)) }
+                )
+            }
+            composable(Screen.Notifications.route) {
+                NotificationsScreen(
+                    onBack = { navController.popBackStack() },
+                    onDreamClick = { dreamId -> navController.navigate(Screen.DreamDetail.createRoute(dreamId)) },
+                    onUserClick = { userId -> navController.navigate(Screen.PublicProfile.createRoute(userId)) }
+                )
+            }
+            composable(
+                "public_profile/{userId}",
+                arguments = listOf(androidx.navigation.navArgument("userId") { type = androidx.navigation.NavType.StringType })
+            ) { backStackEntry ->
+                val userId = backStackEntry.arguments?.getString("userId") ?: return@composable
+                PublicProfileScreen(
+                    userId = userId,
+                    onBack = { navController.popBackStack() },
+                    onDreamClick = { dreamId -> navController.navigate(Screen.DreamDetail.createRoute(dreamId)) }
+                )
+            }
+            composable(Screen.DiaryComposer.route) {
+                DiaryComposerScreen(onBack = { navController.popBackStack() })
+            }
+            composable(
+                "diary_viewer/{userId}",
+                arguments = listOf(androidx.navigation.navArgument("userId") { type = androidx.navigation.NavType.StringType })
+            ) { backStackEntry ->
+                val userId = backStackEntry.arguments?.getString("userId") ?: return@composable
+                DiaryStoryViewerScreen(
+                    userId = userId,
+                    onBack = { navController.popBackStack() },
+                    onGoalClick = { goalId -> navController.navigate(Screen.GoalDetail.createRoute(goalId)) }
+                )
+            }
+            composable(Screen.SpiritualTools.route) {
+                SpiritualToolsScreen(onBack = { navController.popBackStack() })
             }
         }
     }
@@ -107,7 +215,14 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(isLoggedIn: Boolean, onLoginClick: () -> Unit, onProfileClick: (() -> Unit)? = null) {
+fun TopBar(
+    isLoggedIn: Boolean,
+    unreadCount: Int = 0,
+    onLoginClick: () -> Unit,
+    onProfileClick: (() -> Unit)? = null,
+    onNotificationsClick: (() -> Unit)? = null,
+    onSpiritualToolsClick: (() -> Unit)? = null
+) {
     var showAuraPopup by remember { mutableStateOf(false) }
 
     TopAppBar(
@@ -170,14 +285,28 @@ fun TopBar(isLoggedIn: Boolean, onLoginClick: () -> Unit, onProfileClick: (() ->
         },
         actions = {
             if (isLoggedIn) {
-                IconButton(onClick = { /* TODO */ }) {
-                    BadgedBox(badge = {}) {
-                        Icon(Icons.Filled.Notifications, contentDescription = null, tint = Color.White)
+                IconButton(onClick = { onSpiritualToolsClick?.invoke() }) {
+                    Icon(Icons.Filled.AutoAwesome, contentDescription = "Ruhsal Araçlar", tint = AstralGold)
+                }
+                IconButton(onClick = { onNotificationsClick?.invoke() }) {
+                    BadgedBox(
+                        badge = {
+                            if (unreadCount > 0) {
+                                Badge(
+                                    containerColor = Color(0xFFEF4444),
+                                    contentColor = Color.White
+                                ) {
+                                    Text(if (unreadCount > 99) "99+" else "$unreadCount", fontSize = 10.sp)
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(Icons.Filled.Notifications, contentDescription = "Bildirimler", tint = Color.White)
                     }
                 }
                 Box(
                     modifier = Modifier
-                        .padding(end = 16.dp)
+                        .padding(end = 8.dp)
                         .size(32.dp)
                         .clip(CircleShape)
                         .background(Void800)
@@ -192,6 +321,13 @@ fun TopBar(isLoggedIn: Boolean, onLoginClick: () -> Unit, onProfileClick: (() ->
                         Icon(Icons.Filled.MoreVert, contentDescription = "More", tint = Color.White)
                     }
                     DropdownMenu(expanded = showMoreMenu, onDismissRequest = { showMoreMenu = false }) {
+                        DropdownMenuItem(
+                            text = { Text("Ruhsal Araçlar") },
+                            onClick = {
+                                showMoreMenu = false
+                                onSpiritualToolsClick?.invoke()
+                            }
+                        )
                         DropdownMenuItem(text = { Text("Settings") }, onClick = { showMoreMenu = false })
                         DropdownMenuItem(text = { Text("Help & Feedback") }, onClick = { showMoreMenu = false })
                     }

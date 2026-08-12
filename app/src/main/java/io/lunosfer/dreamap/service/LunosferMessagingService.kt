@@ -38,15 +38,22 @@ class LunosferMessagingService : FirebaseMessagingService() {
             ?: remoteMessage.data["message"] 
             ?: ""
 
-        showNotification(title, body)
+        showNotification(title, body, remoteMessage.data)
     }
 
-    private fun showNotification(title: String, message: String) {
+    private fun showNotification(title: String, message: String, data: Map<String, String>) {
+        val targetRoute = parseTargetRoute(data)
+
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            if (!targetRoute.isNullOrBlank()) {
+                putExtra("target_route", targetRoute)
+            }
         }
+
+        val requestCode = System.currentTimeMillis().toInt()
         val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent,
+            this, requestCode, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -72,12 +79,37 @@ class LunosferMessagingService : FirebaseMessagingService() {
             .setContentIntent(pendingIntent)
             .build()
 
-        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+        notificationManager.notify(requestCode, notification)
     }
 
     companion object {
         private const val TAG = "LunosferFCM"
         const val CHANNEL_ID = "lunosfer_notifications"
+
+        fun parseTargetRoute(data: Map<String, String>): String? {
+            val rawUrl = data["url"] ?: data["target_route"]
+            if (!rawUrl.isNullOrBlank()) {
+                val cleanUrl = rawUrl.trim().removePrefix("/")
+                if (cleanUrl.isNotBlank()) {
+                    return cleanUrl
+                }
+            }
+
+            val type = data["type"]?.lowercase()
+            val id = data["id"] ?: data["target_id"] ?: data["entity_id"]
+            if (!type.isNullOrBlank()) {
+                return when (type) {
+                    "dream", "dream_detail" -> if (!id.isNullOrBlank()) "dream/$id" else null
+                    "thread", "message", "chat" -> if (!id.isNullOrBlank()) "thread/$id" else null
+                    "goal", "vision", "goal_detail" -> if (!id.isNullOrBlank()) "goal/$id" else null
+                    "user", "profile" -> if (!id.isNullOrBlank()) "public_profile/$id" else null
+                    "notification", "notifications" -> "notifications"
+                    else -> null
+                }
+            }
+
+            return null
+        }
 
         fun sendTokenToServer(token: String) {
             CoroutineScope(Dispatchers.IO).launch {
@@ -85,8 +117,23 @@ class LunosferMessagingService : FirebaseMessagingService() {
                     NetworkModule.api.subscribePush(PushSubscriptionRequest(token = token))
                     Log.d(TAG, "FCM token successfully registered to server")
                 } catch (e: Exception) {
-                    Log.e(TAG, "Failed to send FCM token to server", e)
+                    Log.e(TAG, "Failed to send FCM token to server (silently ignored)", e)
                 }
+            }
+        }
+
+        fun registerCurrentFcmToken() {
+            try {
+                com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val token = task.result
+                        if (!token.isNullOrEmpty()) {
+                            sendTokenToServer(token)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Could not fetch FCM token", e)
             }
         }
     }

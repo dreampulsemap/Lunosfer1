@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Lunosfer</string>
     <string name="nav_home">首页</string>
@@ -7,7 +7,57 @@
     <string name="nav_messages">消息</string>
     <string name="nav_create">创建</string>
     <string name="nav_new_dream">记录梦境</string>
-    <string name="nav_new_vision">添加新愿景</string>
+    <string name="nav_new_vision">新愿景</string>
     <string name="nav_login">登录</string>
     <string name="nav_notifications">通知</string>
-<string name="dream_addTitle">分享你的梦</string><string name="dream_placeholder">尽可能详细地写下你记得的梦...</string><string name="dream_location">位置</string><string name="dream_public">公开</string><string name="dream_friends">仅好友</string><string name="dream_private">私密</string><string name="dream_shareInFeed">分享到公开动态</string><string name="dream_submit">提交梦境</string><string name="dream_validationContent">请输入梦境内容。</string><string name="dream_createFailed">无法创建梦境。</string><string name="dream_unknownLocation">未知位置</string><string name="dream_emotion_joy">喜悦</string><string name="dream_emotion_peace">平静</string><string name="dream_emotion_love">爱</string><string name="dream_emotion_hope">希望</string><string name="dream_emotion_awe">敬畏</string><string name="dream_emotion_surprise">惊讶</string><string name="dream_emotion_curiosity">好奇</string><string name="dream_emotion_confusion">困惑</string><string name="dream_emotion_fear">恐惧</string><string name="dream_emotion_anxiety">焦虑</string><string name="dream_emotion_sadness">悲伤</string><string name="dream_emotion_loneliness">孤独</string><string name="dream_emotion_anger">愤怒</string><string name="dream_emotion_shame">羞愧</string><string name="dream_emotion_disgust">厌恶</string><string name="dream_emotion_relief">释然</string><string name="dream_slide_title_0">梦境图像</string><string name="dream_slide_title_1">梦境文本</string><string name="dream_slide_title_2">AI分析</string></resources>
+    <string name="auth_title">欢迎回来</string>
+    <string name="auth_register_title">创建您的账户</string>
+    <string name="auth_email">电子邮件</string>
+    <string name="auth_password">密码</string>
+    <string name="auth_username">用户名</string>
+    <string name="auth_username_required">需要用户名。</string>
+    <string name="auth_login">登录</string>
+    <string name="auth_register">注册</string>
+    <string name="auth_loading">加载中...</string>
+    <string name="auth_success">注册成功！请检查您的电子邮件。</string>
+    <string name="auth_no_account">没有账户？注册</string>
+    <string name="auth_has_account">已有账户？登录</string>
+    <string name="action_login_google">使用 Google 继续</string>
+    <string name="action_login_github">使用 GitHub 继续</string>
+    <string name="dream_addTitle">分享你的梦</string>
+    <string name="dream_placeholder">尽可能详细地写下你记得的梦...</string>
+    <string name="dream_location">位置</string>
+    <string name="dream_public">公开</string>
+    <string name="dream_friends">仅限好友</string>
+    <string name="dream_private">私密</string>
+    <string name="dream_shareInFeed">分享到公开动态</string>
+    <string name="dream_submit">提交梦境</string>
+    <string name="dream_validationContent">请输入梦境内容。</string>
+    <string name="dream_createFailed">无法创建梦境。</string>
+    <string name="dream_unknownLocation">未知位置</string>
+    <string name="dream_emotion_joy">喜悦</string>
+    <string name="dream_emotion_peace">平静</string>
+    <string name="dream_emotion_love">爱</string>
+    <string name="dream_emotion_hope">希望</string>
+    <string name="dream_emotion_awe">敬畏</string>
+    <string name="dream_emotion_surprise">惊讶</string>
+    <string name="dream_emotion_curiosity">好奇</string>
+    <string name="dream_emotion_confusion">困惑</string>
+    <string name="dream_emotion_fear">恐惧</string>
+    <string name="dream_emotion_anxiety">焦虑</string>
+    <string name="dream_emotion_sadness">悲伤</string>
+    <string name="dream_emotion_loneliness">孤独</string>
+    <string name="dream_emotion_anger">愤怒</string>
+    <string name="dream_emotion_shame">羞愧</string>
+    <string name="dream_emotion_disgust">厌恶</string>
+    <string name="dream_emotion_relief">释然</string>
+    <string name="dream_analysis_pending">分析准备中...</string>
+    <string name="dream_analysis_failed">梦境分析失败。</string>
+    <string name="dream_analysis_retry">重试</string>
+    <string name="dream_analysis_title">AI分析</string>
+    <string name="dream_slide_title_0">梦境图像</string>
+    <string name="dream_slide_title_1">梦境文本</string>
+    <string name="dream_slide_title_2">AI分析</string>
+    <string name="retry">重试</string>
+    <string name="error_feed">无法加载动态</string>
+</resources>

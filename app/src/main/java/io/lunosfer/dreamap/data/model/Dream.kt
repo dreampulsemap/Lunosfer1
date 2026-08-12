@@ -2,6 +2,7 @@ package io.lunosfer.dreamap.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 /**
  * dreams tablosu satırı. Alan isimleri pages/api/submit-dream.js (insert payload)
@@ -28,7 +29,10 @@ data class Dream(
     val owner: UserProfile? = null,
     // home-feed.js her item'a feed_type: 'dream' | 'vision' ekliyor, tek listede ayırt etmek için.
     @SerialName("feed_type") val feedType: String? = "dream",
-    @SerialName("ai_jungian_analysis") val aiJungianAnalysis: AiJungianAnalysis? = null
+    @SerialName("ai_jungian_analysis") val aiJungianAnalysis: AiJungianAnalysis? = null,
+    @SerialName("ai_sentiment") val aiSentiment: String? = null,
+    @SerialName("premium_deep_analysis") val premiumDeepAnalysis: JsonElement? = null,
+    @SerialName("premium_deep_analysis_status") val premiumDeepAnalysisStatus: String? = null
 ) {
     val displayTitle: String get() = aiTitle?.takeIf { it.isNotBlank() } ?: content.take(60)
 }

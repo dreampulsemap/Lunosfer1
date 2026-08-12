@@ -4,6 +4,7 @@ import io.lunosfer.dreamap.BuildConfig
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.storage.Storage
 
 val supabaseClient = createSupabaseClient(
     supabaseUrl = BuildConfig.SUPABASE_URL,
@@ -14,4 +15,5 @@ val supabaseClient = createSupabaseClient(
         host = "auth-callback"
     }
     install(Postgrest)
+    install(Storage)
 }

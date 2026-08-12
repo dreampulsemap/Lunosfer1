@@ -132,3 +132,40 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     )
 )
+
+val DisplayLarge = TextStyle(
+    fontFamily = SerifFontFamily,
+    fontWeight = FontWeight.Bold,
+    fontSize = 32.sp
+)
+
+val HeadlineLarge = TextStyle(
+    fontFamily = SerifFontFamily,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 24.sp
+)
+
+val TitleMediumStyle = TextStyle(
+    fontFamily = SansFontFamily,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 18.sp
+)
+
+val BodyLargeStyle = TextStyle(
+    fontFamily = SansFontFamily,
+    fontWeight = FontWeight.Normal,
+    fontSize = 16.sp
+)
+
+val BodyMediumStyle = TextStyle(
+    fontFamily = SansFontFamily,
+    fontWeight = FontWeight.Normal,
+    fontSize = 14.sp
+)
+
+val Caption = TextStyle(
+    fontFamily = SansFontFamily,
+    fontWeight = FontWeight.Normal,
+    fontSize = 12.sp
+)
+

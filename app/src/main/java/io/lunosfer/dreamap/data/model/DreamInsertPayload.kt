@@ -17,5 +17,6 @@ data class DreamInsertPayload(
     @SerialName("ai_image_url") val aiImageUrl: String? = null,
     @SerialName("image_source") val imageSource: String? = null,
     @SerialName("image_width") val imageWidth: Int? = null,
-    @SerialName("image_height") val imageHeight: Int? = null
+    @SerialName("image_height") val imageHeight: Int? = null,
+    @SerialName("analysis_status") val analysisStatus: String = "processing"
 )

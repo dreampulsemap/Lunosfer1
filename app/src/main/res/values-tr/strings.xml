@@ -1,7 +1,192 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Lunosfer</string>
+    <string name="nav_home">Ana Sayfa</string>
+    <string name="nav_explore">Keşfet</string>
+    <string name="nav_vision">Vizyon</string>
+    <string name="nav_messages">Mesajlar</string>
+    <string name="nav_create">Oluştur</string>
+    <string name="nav_new_dream">Rüya Kaydet</string>
+    <string name="nav_new_vision">Yeni Vizyon</string>
+    <string name="nav_login">Giriş Yap</string>
+    <string name="nav_notifications">Bildirimler</string>
+    <string name="auth_title">Tekrar Hoş Geldiniz</string>
+    <string name="auth_register_title">Hesabınızı Oluşturun</string>
+    <string name="auth_email">E-posta</string>
+    <string name="auth_password">Şifre</string>
+    <string name="auth_username">Kullanıcı Adı</string>
+    <string name="auth_username_required">Kullanıcı adı gereklidir.</string>
+    <string name="auth_login">Giriş Yap</string>
+    <string name="auth_register">Kayıt Ol</string>
+    <string name="auth_loading">Yükleniyor...</string>
+    <string name="auth_success">Kayıt başarılı! Lütfen e-postanızı kontrol edin.</string>
+    <string name="auth_no_account">Hesabınız yok mu? Kayıt Olun</string>
+    <string name="auth_has_account">Zaten hesabınız var mı? Giriş Yapın</string>
+    <string name="action_login_google">Google ile Devam Et</string>
+    <string name="action_login_github">GitHub ile Devam Et</string>
+    <string name="dream_addTitle">Rüyanı Paylaş</string>
+    <string name="dream_placeholder">Rüyanı hatırladığın kadar detaylı yaz...</string>
+    <string name="dream_location">Konum</string>
+    <string name="dream_public">Herkese Açık</string>
+    <string name="dream_friends">Sadece Arkadaşlar</string>
+    <string name="dream_private">Gizli</string>
+    <string name="dream_shareInFeed">Akışta paylaş</string>
+    <string name="dream_submit">Rüyayı Gönder</string>
+    <string name="dream_validationContent">Lütfen rüya metnini girin.</string>
+    <string name="dream_createFailed">Rüya oluşturulamadı.</string>
+    <string name="dream_unknownLocation">Bilinmeyen konum</string>
+    <string name="dream_emotion_joy">Neşe</string>
+    <string name="dream_emotion_peace">Huzur</string>
+    <string name="dream_emotion_love">Sevgi</string>
+    <string name="dream_emotion_hope">Umut</string>
+    <string name="dream_emotion_awe">Hayranlık</string>
+    <string name="dream_emotion_surprise">Sürpriz</string>
+    <string name="dream_emotion_curiosity">Merak</string>
+    <string name="dream_emotion_confusion">Karmaşa</string>
+    <string name="dream_emotion_fear">Korku</string>
+    <string name="dream_emotion_anxiety">Endişe</string>
+    <string name="dream_emotion_sadness">Üzüntü</string>
+    <string name="dream_emotion_loneliness">Yalnızlık</string>
+    <string name="dream_emotion_anger">Öfke</string>
+    <string name="dream_emotion_shame">Utanç</string>
+    <string name="dream_emotion_disgust">Tiksinti</string>
+    <string name="dream_emotion_relief">Rahatlama</string>
     <string name="dream_analysis_pending">Analiziniz hazırlanıyor...</string>
     <string name="dream_analysis_failed">Rüya analizi başarısız oldu.</string>
     <string name="dream_analysis_retry">Tekrar Dene</string>
     <string name="dream_analysis_title">Yapay Zeka Analizi</string>
-<string name="dream_slide_title_0">Rüya Görseli</string><string name="dream_slide_title_1">Rüya Metni</string><string name="dream_slide_title_2">AI Analizi</string></resources>
+    <string name="dream_slide_title_0">Rüya Görseli</string>
+    <string name="dream_slide_title_1">Rüya Metni</string>
+    <string name="dream_slide_title_2">AI Analizi</string>
+    <string name="retry">Tekrar Dene</string>
+    <string name="error_feed">Akış yüklenemedi</string>
+    <string name="empty_vision">Henüz aktif bir vizyon yok</string>
+    <string name="empty_victory">Henüz kutlanan bir zafer yok</string>
+    <string name="empty_phoenix">Anka Duvarı sessiz</string>
+
+    <!-- AISummariesCard -->
+    <string name="summary_title">Rüya Özetleri</string>
+    <string name="summary_weekly">Haftalık</string>
+    <string name="summary_monthly">Aylık</string>
+    <string name="summary_generating_ai">AI Özet oluşturuluyor...</string>
+    <string name="summary_loading">Özet yükleniyor...</string>
+    <string name="summary_dreams_analyzed">🌙 %1$d Rüya Analiz Edildi</string>
+    <string name="summary_sentiment">Duygu: %1$s</string>
+    <string name="summary_refresh">Yenile</string>
+    <string name="summary_not_created">Son %1$s rüya kayıtlarından çıkarılan AI bilinçaltı özeti henüz oluşturulmadı.</string>
+    <string name="summary_synthesizing">Özet Sentezleniyor...</string>
+    <string name="summary_create_btn">Özet Oluştur</string>
+    <string name="summary_create_period_btn">%1$s Özet Oluştur</string>
+
+    <!-- PixabayMediaPickerDialog -->
+    <string name="pixabay_title">Pixabay Medya Galerisi</string>
+    <string name="pixabay_close">Kapat</string>
+    <string name="pixabay_image">Görsel</string>
+    <string name="pixabay_video">Video</string>
+    <string name="pixabay_search_placeholder">Arama yap...</string>
+    <string name="pixabay_search">Ara</string>
+    <string name="pixabay_images_not_found">Görsel bulunamadı.</string>
+    <string name="pixabay_videos_not_found">Video bulunamadı.</string>
+
+    <!-- ReferralCard -->
+    <string name="referral_title">Arkadaşını Davet Et &amp; Mana Kazan</string>
+    <string name="referral_your_code">Davet Kodun:</string>
+    <string name="referral_copied">Davet kodu kopyalandı!</string>
+    <string name="referral_copy">Kopyala</string>
+    <string name="referral_stat_friends">Toplanan Arkadaş</string>
+    <string name="referral_stat_mana">Kazanılan Mana</string>
+    <string name="referral_enter_code_label">Bir Arkadaşının Kodunu Gir:</string>
+    <string name="referral_use_btn">Kullan</string>
+
+    <!-- AddFriendScreen -->
+    <string name="friend_search_title">Kullanıcı Ara &amp; Takip Et</string>
+    <string name="back_button_desc">Geri</string>
+    <string name="friend_search_placeholder">Kullanıcı adı veya isim ile ara...</string>
+    <string name="friend_pending_requests">Gelen Takip İstekleri (%1$d)</string>
+    <string name="friend_search_results">Arama Sonuçları</string>
+    <string name="friend_results_count">Sonuçlar (%1$d)</string>
+    <string name="friend_not_found">Kullanıcı bulunamadı</string>
+    <string name="friend_default_user">Kullanıcı</string>
+    <string name="friend_accept">Kabul Et</string>
+    <string name="friend_reject">Reddet</string>
+    <string name="friend_following">Takipte</string>
+    <string name="friend_pending">Bekliyor</string>
+    <string name="friend_follow">Takip Et</string>
+
+    <!-- MessagesScreen -->
+    <string name="msg_login_required_title">Giriş Yapılması Gerekiyor</string>
+    <string name="msg_login_required_desc">Mesajlarınızı ve sohbetlerinizi görebilmek için oturum açmanız gerekmektedir.</string>
+    <string name="msg_login_btn">Giriş Yap</string>
+    <string name="msg_load_failed">Mesajlar yüklenemedi</string>
+    <string name="msg_retry">Tekrar Dene</string>
+    <string name="msg_no_conversations_title">Henüz bir konuşman yok</string>
+    <string name="msg_no_conversations_desc">Bir arkadaşına mesaj gönderdiğinde burada görünecek.</string>
+    <string name="msg_attachment_photo">📷 Fotoğraf</string>
+    <string name="msg_attachment_video">🎥 Video</string>
+    <string name="msg_attachment_file">📎 Dosya</string>
+    <string name="msg_attachment_generic">Ek gönderildi</string>
+
+    <!-- ThreadScreen -->
+    <string name="thread_load_failed">Konuşma yüklenemedi</string>
+    <string name="thread_retry">Tekrar Dene</string>
+    <string name="thread_msg_read">Okundu</string>
+    <string name="thread_msg_sent">Gönderildi</string>
+    <string name="thread_play_desc">Oynat</string>
+    <string name="thread_attachment_photo_desc">Fotoğraf</string>
+    <string name="thread_attachment_video_desc">Video</string>
+    <string name="thread_attachment_file_desc">Dosya</string>
+    <string name="thread_file_open_error">Dosya açılamadı</string>
+    <string name="thread_remove_attachment">Kaldır</string>
+    <string name="thread_add_media">Medya ekle</string>
+    <string name="thread_option_select_device">Cihazdan Dosya / Medya Seç</string>
+    <string name="thread_option_add_url">Medya Bağlantısı (URL) Ekle</string>
+    <string name="thread_input_placeholder">Mesaj yaz…</string>
+    <string name="thread_send_desc">Gönder</string>
+    <string name="thread_url_dialog_title">Medya Bağlantısı Ekle</string>
+    <string name="thread_url_dialog_label">URL (http:// veya https://)</string>
+    <string name="thread_add_btn">Ekle</string>
+    <string name="thread_cancel_btn">İptal</string>
+    <string name="thread_attachment_generic">Ek</string>
+
+    <!-- SpiritualToolsScreen -->
+    <string name="spiritual_title">Ruhsal Araçlar</string>
+    <string name="spiritual_tab_mental_wall">Zihin Duvarı</string>
+    <string name="spiritual_tab_psyche_map">Psyche Map</string>
+    <string name="spiritual_tab_prophet">Kahin</string>
+    <string name="spiritual_mental_wall_header">Zihin Duvarı (Mental Wall)</string>
+    <string name="spiritual_mental_wall_desc">Rüya bilinçaltının sembollerini, arketip motiflerini ve duygu haritanı tek bir soyut kolaj ve anlatıda birleştirir.</string>
+    <string name="spiritual_synthesizing">Sentezleniyor...</string>
+    <string name="spiritual_synthesize_btn">Zihin Duvarını Sentezle</string>
+    <string name="spiritual_mental_wall_idle">Zihin duvarını ilk kez oluşturmak için yukarıdaki butona dokun.</string>
+    <string name="spiritual_mental_wall_loading_status">Bilinçaltı sembolleri haritalandırılıyor...</string>
+    <string name="refresh_button_desc">Yenile</string>
+    <string name="spiritual_psyche_map_desc">Tüm rüya kayıtlarından çıkarılan Jungian arketip ağı ve psişik dengen.</string>
+    <string name="spiritual_psychic_score">Psişik Skor</string>
+    <string name="spiritual_dominant_archetype">Baskın Arketip</string>
+    <string name="spiritual_synthesis_summary">Ruhsal Sentez Özeti</string>
+    <string name="spiritual_archetype_distribution">Arketip Dağılımı</string>
+    <string name="spiritual_prophet_header">Kahin (Prophet)</string>
+    <string name="spiritual_prophet_desc">Zihnini kurcalayan niyet veya sorunu Kahin\'e sun. Bilinçaltı verilerinden ve kozmik rehberlikten kehanet al.</string>
+    <string name="spiritual_prophet_placeholder">Örn: Kariyer yolculuğumda hangi sembole odaklanmalıyım?</string>
+    <string name="spiritual_prophet_loading">Kehanet Çekiliyor...</string>
+    <string name="spiritual_prophet_btn">Kahin\'e Danış</string>
+    <string name="spiritual_prophet_card_label">KART: %1$s</string>
+
+    <!-- VisionScreen -->
+    <string name="vision_load_failed">Vizyonlar yüklenemedi</string>
+    <string name="vision_retry">Tekrar Dene</string>
+    <string name="vision_public_visions_title">Herkese Açık Vizyonlar</string>
+    <string name="vision_no_public_visions_title">Henüz herkese açık bir vizyon yok</string>
+    <string name="vision_no_public_visions_desc">İlk vizyonu sen oluşturabilirsin.</string>
+    <string name="vision_daily_compass_title">Günlük Pusula</string>
+    <string name="vision_jung_guide">JUNG REHBERİ</string>
+    <string name="vision_compass_idle_text">Bugünün kozmik ve ruhsal yönelimini öğrenmek için pusulana dokun.</string>
+    <string name="vision_compass_btn">Günün Pusulasını Çek</string>
+    <string name="vision_compass_loading">Kozmik okuma yapılıyor...</string>
+    <string name="vision_compass_archetype_label">Arketi̇p: %1$s</string>
+    <string name="vision_compass_already_used">Bugün zaten baktın, yarın tekrar gel.</string>
+    <string name="vision_daily_seeds_title">Bugün Yapman Gerekenler (Günün Tohumları)</string>
+    <string name="vision_daily_seeds_no_active_goals">Aktif bir vizyonun yok. Yeni bir vizyon ekleyerek günlük küçük adımlarını alabilirsin.</string>
+    <string name="vision_daily_seeds_no_seed_text">Bugünkü mikro adım henüz üretilmedi.</string>
+    <string name="vision_daily_seeds_generate_btn">Adımı Öner</string>
+</resources>

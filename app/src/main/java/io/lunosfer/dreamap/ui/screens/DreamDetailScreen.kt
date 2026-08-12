@@ -1,20 +1,27 @@
 package io.lunosfer.dreamap.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.ModeComment
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,32 +30,53 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import io.lunosfer.dreamap.data.model.DreamDetail
+import io.github.jan.supabase.auth.auth
+import io.lunosfer.dreamap.data.model.*
+import io.lunosfer.dreamap.supabase.supabaseClient
 import io.lunosfer.dreamap.ui.theme.*
 import io.lunosfer.dreamap.ui.viewmodel.DreamDetailUiState
 import io.lunosfer.dreamap.ui.viewmodel.DreamDetailViewModel
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 @Composable
 fun DreamDetailScreen(
     dreamId: Long,
     onBack: () -> Unit,
+    onUserClick: ((String) -> Unit)? = null,
     viewModel: DreamDetailViewModel = viewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+    val currentUserId = supabaseClient.auth.currentUserOrNull()?.id
 
     LaunchedEffect(dreamId) {
         viewModel.loadDream(dreamId)
+    }
+
+    // Action error / success toasts
+    LaunchedEffect(state) {
+        val s = state as? DreamDetailUiState.Success
+        if (s?.actionError != null) {
+            Toast.makeText(context, s.actionError, Toast.LENGTH_SHORT).show()
+            viewModel.clearActionError()
+        }
+        if (s?.actionMessage != null) {
+            Toast.makeText(context, s.actionMessage, Toast.LENGTH_SHORT).show()
+            viewModel.clearActionMessage()
+        }
     }
 
     Scaffold(
@@ -82,10 +110,28 @@ fun DreamDetailScreen(
                 }
                 is DreamDetailUiState.Success -> {
                     DreamDetailContent(
-                        dream = s.dream,
+                        state = s,
+                        currentUserId = currentUserId,
                         onBack = onBack,
+                        onUserClick = onUserClick,
                         onRefresh = { viewModel.loadDream(dreamId) },
-                        onAnalyze = { viewModel.analyzeDream(dreamId, s.dream.content, s.dream.originalLanguage ?: "en") }
+                        onAnalyze = { viewModel.analyzeDream(dreamId, s.dream.content, s.dream.originalLanguage ?: "en") },
+                        onRequestDeepAnalysis = { viewModel.requestDeepAnalysis(dreamId) },
+                        onToggleLike = { viewModel.toggleLike(dreamId, currentUserId) },
+                        onAddComment = { text -> viewModel.addComment(dreamId, currentUserId, text) },
+                        onDeleteComment = { commentId ->
+                            if (currentUserId != null) viewModel.deleteComment(commentId, currentUserId)
+                        },
+                        onUpdateDream = { request ->
+                            viewModel.updateDream(request) { viewModel.loadDream(dreamId) }
+                        },
+                        onDeleteDream = { softDelete ->
+                            if (currentUserId != null) {
+                                viewModel.deleteDream(dreamId, currentUserId, softDelete, onSuccess = onBack)
+                            }
+                        },
+                        onBoostDream = { viewModel.boostDream(dreamId) },
+                        onAddBounty = { amount -> viewModel.addBounty(dreamId, amount) }
                     )
                 }
             }
@@ -103,22 +149,40 @@ private fun getSlideTitle(pageIndex: Int): String {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DreamDetailContent(
-    dream: DreamDetail,
+    state: DreamDetailUiState.Success,
+    currentUserId: String?,
     onBack: () -> Unit,
+    onUserClick: ((String) -> Unit)?,
     onRefresh: () -> Unit,
-    onAnalyze: () -> Unit
+    onAnalyze: () -> Unit,
+    onRequestDeepAnalysis: () -> Unit,
+    onToggleLike: () -> Unit,
+    onAddComment: (String) -> Unit,
+    onDeleteComment: (Long) -> Unit,
+    onUpdateDream: (UpdateDreamRequest) -> Unit,
+    onDeleteDream: (softDelete: Boolean) -> Unit,
+    onBoostDream: () -> Unit,
+    onAddBounty: (Int) -> Unit
 ) {
+    val dream = state.dream
+    val isOwner = currentUserId != null && currentUserId == dream.userId
+
+    var showEditDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showBountyDialog by remember { mutableStateOf(false) }
+    var showCommentsSheet by remember { mutableStateOf(false) }
+
     val pagerState = rememberPagerState(pageCount = { 3 })
-    val currentLocale = Locale.getDefault().language
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        // Slim header row: back arrow, date + location, and visibility badge
+        // Top Header Row
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -143,7 +207,7 @@ fun DreamDetailContent(
                     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                     val dateDisplay = try {
                         val date = sdf.parse(dream.dreamDate)
-                        SimpleDateFormat("d MMMM yyyy", Locale.getDefault()).format(date ?: java.util.Date())
+                        SimpleDateFormat("d MMMM yyyy", Locale.getDefault()).format(date ?: Date())
                     } catch (e: Exception) {
                         dream.dreamDate.take(10)
                     }
@@ -155,6 +219,22 @@ fun DreamDetailContent(
                         fontWeight = FontWeight.SemiBold
                     )
 
+                    if (dream.owner != null || dream.userId.isNotBlank()) {
+                        Text(
+                            text = "@${dream.owner?.username ?: dream.owner?.nameOrFallback ?: "yazar"}",
+                            color = Color(0xFF38BDF8),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .clickable {
+                                    if (onUserClick != null && dream.userId.isNotBlank()) {
+                                        onUserClick(dream.userId)
+                                    }
+                                }
+                        )
+                    }
+
                     if (!dream.locationName.isNullOrBlank()) {
                         Text(
                             text = dream.locationName,
@@ -165,34 +245,68 @@ fun DreamDetailContent(
                 }
             }
 
-            // Small visibility badge
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(50))
-                    .background(Void800)
-                    .border(BorderStroke(0.5.dp, Color.White.copy(alpha = 0.15f)), shape = RoundedCornerShape(50))
-                    .padding(horizontal = 10.dp, vertical = 4.dp)
-            ) {
-                Text(
-                    text = dream.visibility.uppercase(),
-                    color = Color.White.copy(alpha = 0.85f),
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 0.8.sp
-                )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                // Visibility badge
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .background(Void800)
+                        .border(BorderStroke(0.5.dp, Color.White.copy(alpha = 0.15f)), shape = RoundedCornerShape(50))
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = dream.visibility.uppercase(),
+                        color = Color.White.copy(alpha = 0.85f),
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.8.sp
+                    )
+                }
+
+                // Owner actions: Edit & Delete buttons
+                if (isOwner) {
+                    IconButton(onClick = { showEditDialog = true }, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Filled.Edit, contentDescription = "Düzenle", tint = AstralGold, modifier = Modifier.size(18.dp))
+                    }
+                    IconButton(onClick = { showDeleteDialog = true }, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Filled.Delete, contentDescription = "Sil", tint = Color(0xFFF87171), modifier = Modifier.size(18.dp))
+                    }
+                }
             }
         }
 
-        // Top-left page indicator text (e.g., "Rüya Görseli (1/3)") in gray monospace style
+        // Page Indicator
         val slideLabel = getSlideTitle(pagerState.currentPage)
-        Text(
-            text = "$slideLabel (${pagerState.currentPage + 1}/3)",
-            color = Color(0xFF94A3B8),
-            fontFamily = FontFamily.Monospace,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(start = 4.dp, bottom = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "$slideLabel (${pagerState.currentPage + 1}/3)",
+                color = Color(0xFF94A3B8),
+                fontFamily = FontFamily.Monospace,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium
+            )
+
+            if (state.bounty > 0) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .background(AstralGold.copy(alpha = 0.2f))
+                        .border(BorderStroke(0.5.dp, AstralGold), shape = RoundedCornerShape(50))
+                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        text = "🏆 Ödül: ${state.bounty} Aura",
+                        color = AstralGold,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
 
         // 3-Page Horizontal Pager
         HorizontalPager(
@@ -204,10 +318,564 @@ fun DreamDetailContent(
             when (page) {
                 0 -> DreamImageCardPage(dream = dream)
                 1 -> DreamTextCardPage(dream = dream)
-                2 -> DreamAnalysisCardPage(dream = dream, onRefresh = onRefresh, onAnalyze = onAnalyze)
+                2 -> DreamAnalysisCardPage(
+                    dream = dream,
+                    isGeneratingDeepAnalysis = state.isGeneratingDeepAnalysis,
+                    deepAnalysisResult = state.deepAnalysisResult,
+                    onRefresh = onRefresh,
+                    onAnalyze = onAnalyze,
+                    onRequestDeepAnalysis = onRequestDeepAnalysis
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Social Action Bar
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(Void900)
+                .border(BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)), shape = RoundedCornerShape(16.dp))
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Like Button
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable { onToggleLike() }
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Icon(
+                    imageVector = if (state.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                    contentDescription = "Beğen",
+                    tint = if (state.isLiked) Color(0xFFEF4444) else Color(0xFF94A3B8),
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    text = "${state.likesCount}",
+                    color = if (state.isLiked) Color(0xFFEF4444) else Color.White,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            // Comment Button
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable { showCommentsSheet = !showCommentsSheet }
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.ModeComment,
+                    contentDescription = "Yorumlar",
+                    tint = AstralGold,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    text = "${state.commentsCount}",
+                    color = Color.White,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            // Owner features: Boost & Add Bounty
+            if (isOwner) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Button(
+                        onClick = onBoostDream,
+                        colors = ButtonDefaults.buttonColors(containerColor = AetherViolet),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text("✦ Parlat (3 Aura)", fontSize = 11.sp, color = Color.White)
+                    }
+
+                    OutlinedButton(
+                        onClick = { showBountyDialog = true },
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = AstralGold),
+                        border = BorderStroke(1.dp, AstralGold),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text("🏆 Ödül Ekle", fontSize = 11.sp)
+                    }
+                }
+            }
+        }
+
+        // Inline Comments Section (Expandable)
+        if (showCommentsSheet) {
+            Spacer(modifier = Modifier.height(8.dp))
+            CommentsSection(
+                comments = state.comments,
+                isLoading = state.isLoadingComments,
+                isSubmitting = state.isSubmittingComment,
+                currentUserId = currentUserId,
+                onAddComment = onAddComment,
+                onDeleteComment = onDeleteComment
+            )
+        }
+    }
+
+    // Edit Dream Dialog
+    if (showEditDialog && currentUserId != null) {
+        EditDreamDialog(
+            dream = dream,
+            currentUserId = currentUserId,
+            onDismiss = { showEditDialog = false },
+            onSave = { request ->
+                onUpdateDream(request)
+                showEditDialog = false
+            }
+        )
+    }
+
+    // Delete Confirmation Dialog
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            containerColor = Void900,
+            title = { Text("Rüyayı Sil", color = Color.White) },
+            text = { Text("Bu rüyayı akıştan kaldırmak mı yoksa kalıcı olarak silmek mi istersiniz?", color = Color.LightGray) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        onDeleteDream(false) // Hard delete
+                    }
+                ) {
+                    Text("Kalıcı Olarak Sil", color = Color(0xFFF87171))
+                }
+            },
+            dismissButton = {
+                Row {
+                    TextButton(
+                        onClick = {
+                            showDeleteDialog = false
+                            onDeleteDream(true) // Soft delete
+                        }
+                    ) {
+                        Text("Akıştan Kaldır", color = AstralGold)
+                    }
+                    TextButton(onClick = { showDeleteDialog = false }) {
+                        Text("İptal", color = Color.Gray)
+                    }
+                }
+            }
+        )
+    }
+
+    // Add Bounty Dialog
+    if (showBountyDialog) {
+        AddBountyDialog(
+            onDismiss = { showBountyDialog = false },
+            onConfirm = { amount ->
+                onAddBounty(amount)
+                showBountyDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+private fun CommentsSection(
+    comments: List<DreamComment>,
+    isLoading: Boolean,
+    isSubmitting: Boolean,
+    currentUserId: String?,
+    onAddComment: (String) -> Unit,
+    onDeleteComment: (Long) -> Unit
+) {
+    var commentText by remember { mutableStateOf("") }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(max = 260.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Void900),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp)
+        ) {
+            Text(
+                text = "Yorumlar (${comments.size})",
+                color = AstralGold,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        color = AstralGold,
+                        modifier = Modifier.size(24.dp).align(Alignment.Center)
+                    )
+                } else if (comments.isEmpty()) {
+                    Text(
+                        text = "Henüz yorum yapılmamış. İlk yorumu siz yazın!",
+                        color = Color.Gray,
+                        fontSize = 12.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(comments) { comment ->
+                            CommentItemRow(
+                                comment = comment,
+                                currentUserId = currentUserId,
+                                onDelete = { onDeleteComment(comment.id) }
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Input Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = commentText,
+                    onValueChange = { commentText = it },
+                    placeholder = { Text("Yorum yazın...", color = Color.Gray, fontSize = 12.sp) },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AstralGold,
+                        unfocusedBorderColor = Void800,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    )
+                )
+
+                IconButton(
+                    onClick = {
+                        if (commentText.isNotBlank()) {
+                            onAddComment(commentText)
+                            commentText = ""
+                        }
+                    },
+                    enabled = !isSubmitting && commentText.isNotBlank(),
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(if (commentText.isNotBlank()) AstralGold else Void800)
+                ) {
+                    if (isSubmitting) {
+                        CircularProgressIndicator(color = Void950, modifier = Modifier.size(18.dp))
+                    } else {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Send,
+                            contentDescription = "Gönder",
+                            tint = Void950,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
             }
         }
     }
+}
+
+@Composable
+private fun CommentItemRow(
+    comment: DreamComment,
+    currentUserId: String?,
+    onDelete: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(Void800.copy(alpha = 0.5f))
+            .padding(8.dp),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        val avatarUrl = comment.userProfile?.avatarUrl
+        if (!avatarUrl.isNullOrBlank()) {
+            AsyncImage(
+                model = avatarUrl,
+                contentDescription = "Avatar",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(28.dp)
+                    .clip(CircleShape)
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .clip(CircleShape)
+                    .background(AstralGold.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = comment.userProfile?.nameOrFallback?.take(1)?.uppercase() ?: "?",
+                    color = AstralGold,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = comment.userProfile?.nameOrFallback ?: "Kullanıcı",
+                color = AstralGold,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = comment.content,
+                color = Color.White,
+                fontSize = 12.sp
+            )
+        }
+
+        if (currentUserId != null && currentUserId == comment.userId) {
+            IconButton(
+                onClick = onDelete,
+                modifier = Modifier.size(24.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "Yorumu sil",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(14.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun EditDreamDialog(
+    dream: DreamDetail,
+    currentUserId: String,
+    onDismiss: () -> Unit,
+    onSave: (UpdateDreamRequest) -> Unit
+) {
+    var content by remember { mutableStateOf(dream.content) }
+    var locationName by remember { mutableStateOf(dream.locationName ?: "") }
+    var visibility by remember { mutableStateOf(dream.visibility) }
+    var inFeed by remember { mutableStateOf(dream.inFeed) }
+    var tagInput by remember { mutableStateOf("") }
+    var tags by remember { mutableStateOf(dream.tags ?: emptyList()) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val maxTags = 10
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = Void900,
+        title = { Text("Rüyayı Düzenle", color = Color.White, fontWeight = FontWeight.Bold) },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (errorMessage != null) {
+                    Text(errorMessage!!, color = Color(0xFFF87171), fontSize = 12.sp)
+                }
+
+                OutlinedTextField(
+                    value = content,
+                    onValueChange = { content = it },
+                    label = { Text("Rüya Metni") },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 6,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AstralGold,
+                        unfocusedBorderColor = Void800,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    )
+                )
+
+                OutlinedTextField(
+                    value = locationName,
+                    onValueChange = { locationName = it },
+                    label = { Text("Konum") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AstralGold,
+                        unfocusedBorderColor = Void800,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    )
+                )
+
+                // Tags Input
+                OutlinedTextField(
+                    value = tagInput,
+                    onValueChange = { input ->
+                        if (input.contains(",")) {
+                            val cleanTag = input.replace(",", "").trim().lowercase()
+                            if (cleanTag.isNotEmpty() && tags.size < maxTags && !tags.contains(cleanTag)) {
+                                tags = tags + cleanTag
+                            }
+                            tagInput = ""
+                        } else {
+                            tagInput = input
+                        }
+                    },
+                    label = { Text("Etiket ekle (virgül koyun)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AstralGold,
+                        unfocusedBorderColor = Void800,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    )
+                )
+
+                if (tags.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        tags.forEach { tag ->
+                            AssistChip(
+                                onClick = { tags = tags - tag },
+                                label = { Text(tag, fontSize = 11.sp) },
+                                trailingIcon = { Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(12.dp)) },
+                                colors = AssistChipDefaults.assistChipColors(containerColor = Void800, labelColor = Color.White)
+                            )
+                        }
+                    }
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = inFeed,
+                        onCheckedChange = { inFeed = it },
+                        colors = CheckboxDefaults.colors(checkedColor = AstralGold, checkmarkColor = Void950)
+                    )
+                    Text("Akışta göster", color = Color.White, fontSize = 13.sp)
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (content.isBlank()) {
+                        errorMessage = "Rüya metni boş olamaz"
+                        return@Button
+                    }
+                    if (content.length > 12000) {
+                        errorMessage = "Rüya metni 12.000 karakteri geçemez"
+                        return@Button
+                    }
+                    val processedTags = tags.map { it.trim().lowercase() }.take(maxTags)
+                    val req = UpdateDreamRequest(
+                        dreamId = dream.id,
+                        userId = currentUserId,
+                        content = content.trim(),
+                        locationName = locationName.trim(),
+                        visibility = visibility,
+                        inFeed = inFeed,
+                        tags = processedTags
+                    )
+                    onSave(req)
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = AstralGold)
+            ) {
+                Text("Kaydet", color = Void950, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("İptal", color = Color.Gray)
+            }
+        }
+    )
+}
+
+@Composable
+private fun AddBountyDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (Int) -> Unit
+) {
+    var amountText by remember { mutableStateOf("5") }
+    var errorText by remember { mutableStateOf<String?>(null) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = Void900,
+        title = { Text("Ödül Ekle (Aura)", color = Color.White, fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Bu rüyaya eklemek istediğiniz Aura miktarını girin (1-50):", color = Color.LightGray, fontSize = 13.sp)
+                if (errorText != null) {
+                    Text(errorText!!, color = Color(0xFFF87171), fontSize = 12.sp)
+                }
+                OutlinedTextField(
+                    value = amountText,
+                    onValueChange = { amountText = it },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AstralGold,
+                        unfocusedBorderColor = Void800,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    )
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val amt = amountText.toIntOrNull()
+                    if (amt == null || amt < 1 || amt > 50) {
+                        errorText = "Lütfen 1 ile 50 arasında bir miktar girin"
+                        return@Button
+                    }
+                    onConfirm(amt)
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = AstralGold)
+            ) {
+                Text("Ekle", color = Void950, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("İptal", color = Color.Gray)
+            }
+        }
+    )
 }
 
 @Composable
@@ -232,7 +900,7 @@ private fun DreamImageCardPage(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.60f),
+                .fillMaxHeight(0.95f),
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = Void900),
             border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f))
@@ -334,7 +1002,6 @@ private fun DreamImageCardPage(
 private fun DreamTextCardPage(
     dream: DreamDetail
 ) {
-    val locale = Locale.getDefault().language
     val titleLabel = getSlideTitle(1)
 
     Card(
@@ -392,8 +1059,11 @@ private fun DreamTextCardPage(
 @Composable
 private fun DreamAnalysisCardPage(
     dream: DreamDetail,
+    isGeneratingDeepAnalysis: Boolean = false,
+    deepAnalysisResult: String? = null,
     onRefresh: () -> Unit,
-    onAnalyze: () -> Unit
+    onAnalyze: () -> Unit,
+    onRequestDeepAnalysis: () -> Unit
 ) {
     val locale = Locale.getDefault().language
     val titleLabel = getSlideTitle(2)
@@ -524,6 +1194,73 @@ private fun DreamAnalysisCardPage(
                             }
                         }
                     }
+
+                    HorizontalDivider(
+                        color = Color.White.copy(alpha = 0.1f),
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+
+                    // Derinlemesine Analiz Bölümü
+                    val activeDeepResult = deepAnalysisResult ?: dream.aiJungianAnalysis?.summary?.get("deep")
+                    if (!activeDeepResult.isNullOrBlank()) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = Void800.copy(alpha = 0.8f)),
+                            border = BorderStroke(1.dp, AstralGold.copy(alpha = 0.5f))
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text("🔮", fontSize = 16.sp)
+                                    Text(
+                                        text = "Derinlemesine Analiz",
+                                        color = AstralGold,
+                                        fontWeight = FontWeight.Bold,
+                                        style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily)
+                                    )
+                                }
+                                Text(
+                                    text = activeDeepResult,
+                                    color = Color.White,
+                                    fontSize = 13.sp,
+                                    lineHeight = 20.sp
+                                )
+                            }
+                        }
+                    } else {
+                        Button(
+                            onClick = onRequestDeepAnalysis,
+                            enabled = !isGeneratingDeepAnalysis,
+                            colors = ButtonDefaults.buttonColors(containerColor = AetherViolet),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            if (isGeneratingDeepAnalysis) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(18.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text("Derin Analiz Hazırlanıyor...", color = Color.White, fontSize = 13.sp)
+                            } else {
+                                Icon(
+                                    Icons.Filled.AutoAwesome,
+                                    contentDescription = null,
+                                    tint = AstralGold,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text("Derinlemesine Analiz İste", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                            }
+                        }
+                    }
                 }
                 "failed" -> {
                     Column(
@@ -588,5 +1325,3 @@ private fun ChipView(text: String, isSelected: Boolean) {
         )
     }
 }
-
-

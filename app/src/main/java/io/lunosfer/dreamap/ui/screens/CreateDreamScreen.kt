@@ -640,6 +640,10 @@ val charCount = content.length
                         errorMessage = context.getString(R.string.dream_validationContent)
                         return@Button
                     }
+                    if (content.length > 12000) {
+                        errorMessage = "Rüya metni 12.000 karakteri geçemez"
+                        return@Button
+                    }
                     errorMessage = null
                     isSubmitting = true
                     

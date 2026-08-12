@@ -26,11 +26,21 @@ data class DreamDetail(
     @SerialName("ai_jungian_analysis") val aiJungianAnalysis: AiJungianAnalysis? = null,
     @SerialName("cover_image_url") val coverImageUrl: String? = null,
     @SerialName("ai_image_url") val aiImageUrl: String? = null,
-    @SerialName("image_url") val imageUrl: String? = null
+    @SerialName("image_url") val imageUrl: String? = null,
+    @SerialName("likes_count") val likesCount: Int = 0,
+    @SerialName("comments_count") val commentsCount: Int = 0,
+    @SerialName("is_liked") val isLiked: Boolean = false,
+    val liked: Boolean = false,
+    @SerialName("bounty_amount") val bountyAmount: Int = 0,
+    val bounty: Int = 0,
+    val owner: UserProfile? = null
 ) {
     val displayImageUrl: String? get() = coverImageUrl?.takeIf { it.isNotBlank() }
         ?: aiImageUrl?.takeIf { it.isNotBlank() }
         ?: imageUrl?.takeIf { it.isNotBlank() }
+
+    val effectiveIsLiked: Boolean get() = isLiked || liked
+    val effectiveBounty: Int get() = if (bounty > 0) bounty else bountyAmount
 }
 
 @Serializable

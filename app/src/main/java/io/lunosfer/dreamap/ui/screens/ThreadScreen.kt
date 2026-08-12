@@ -1,6 +1,9 @@
-// PATH: app/src/main/java/io/lunosfer/dreamap/ui/screens/ThreadScreen.kt
 package io.lunosfer.dreamap.ui.screens
 
+import android.net.Uri
+import android.provider.OpenableColumns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,9 +20,14 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
+import io.lunosfer.dreamap.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,7 +69,7 @@ fun ThreadScreen(otherUserId: String, navController: androidx.navigation.NavCont
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back_button_desc), tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Void950)
@@ -152,7 +160,7 @@ private fun ThreadLoadError(message: String, onRetry: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Konuşma yüklenemedi", color = Color.White, style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily))
+        Text(stringResource(R.string.thread_load_failed), color = Color.White, style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily))
         Spacer(Modifier.height(8.dp))
         Text(message, color = Color(0xFF94A3B8), style = MaterialTheme.typography.bodySmall, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
         Spacer(Modifier.height(16.dp))
@@ -161,7 +169,7 @@ private fun ThreadLoadError(message: String, onRetry: () -> Unit) {
             colors = ButtonDefaults.outlinedButtonColors(contentColor = AetherViolet),
             border = androidx.compose.foundation.BorderStroke(1.dp, AetherViolet.copy(alpha = 0.4f))
         ) {
-            Text("Tekrar Dene")
+            Text(stringResource(R.string.thread_retry))
         }
     }
 }
@@ -318,7 +326,7 @@ private fun MessageBubble(message: Message, isOwn: Boolean, onReact: (String) ->
                 if (isOwn) {
                     Icon(
                         imageVector = if (message.isRead) Icons.Filled.DoneAll else Icons.Filled.Done,
-                        contentDescription = if (message.isRead) "Okundu" else "Gönderildi",
+                        contentDescription = if (message.isRead) stringResource(R.string.thread_msg_read) else stringResource(R.string.thread_msg_sent),
                         tint = if (message.isRead) Color(0xFF34D399) else Color(0xFF64748B),
                         modifier = Modifier.size(12.dp)
                     )
@@ -337,7 +345,7 @@ private fun AttachmentContent(url: String, type: String, name: String?, isOwn: B
         "image" -> {
             AsyncImage(
                 model = url,
-                contentDescription = name ?: "Fotoğraf",
+                contentDescription = name ?: stringResource(R.string.thread_attachment_photo_desc),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .widthIn(max = 260.dp)
@@ -362,14 +370,14 @@ private fun AttachmentContent(url: String, type: String, name: String?, isOwn: B
                 ) {
                     Icon(
                         Icons.Filled.PlayArrow,
-                        contentDescription = "Oynat",
+                        contentDescription = stringResource(R.string.thread_play_desc),
                         tint = if (isOwn) Void950 else Color.White,
                         modifier = Modifier.size(22.dp)
                     )
                 }
                 Spacer(Modifier.width(10.dp))
                 Text(
-                    text = name ?: "Video",
+                    text = name ?: stringResource(R.string.thread_attachment_video_desc),
                     color = if (isOwn) Void950 else Color.White,
                     fontSize = 13.sp,
                     maxLines = 1,
@@ -392,7 +400,7 @@ private fun AttachmentContent(url: String, type: String, name: String?, isOwn: B
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = name ?: "Dosya",
+                    text = name ?: stringResource(R.string.thread_attachment_file_desc),
                     color = if (isOwn) Void950 else Color.White,
                     fontSize = 13.sp,
                     maxLines = 1,
@@ -408,76 +416,254 @@ private fun openAttachmentExternally(context: android.content.Context, url: Stri
         val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
         context.startActivity(intent)
     } catch (e: Exception) {
-        Toast.makeText(context, "Dosya açılamadı", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, context.getString(R.string.thread_file_open_error), Toast.LENGTH_SHORT).show()
     }
 }
 
+private data class SelectedAttachment(
+    val url: String,
+    val type: String,
+    val name: String,
+    val mime: String?,
+    val size: Long?
+)
+
 @Composable
-private fun ThreadInputBar(isSending: Boolean, onSend: (String) -> Unit) {
+private fun ThreadInputBar(
+    isSending: Boolean,
+    onSend: (content: String?, attachmentUrl: String?, attachmentType: String?, attachmentName: String?, attachmentMime: String?, attachmentSize: Long?) -> Unit
+) {
     var text by remember { mutableStateOf("") }
+    var selectedAttachment by remember { mutableStateOf<SelectedAttachment?>(null) }
+    var showUrlDialog by remember { mutableStateOf(false) }
+    var showOptionMenu by remember { mutableStateOf(false) }
     val maxLen = 4000
     val context = LocalContext.current
 
-    Surface(color = Void900) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            IconButton(
-                onClick = {
-                    Toast.makeText(context, "Medya gönderimi yakında!", Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier.size(44.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.AttachFile,
-                    contentDescription = "Dosya ekle",
-                    tint = Color(0xFF94A3B8)
-                )
-            }
-            OutlinedTextField(
-                value = text,
-                onValueChange = { if (it.length <= maxLen) text = it },
-                modifier = Modifier.weight(1f),
-                placeholder = { Text("Mesaj yaz…", color = Color.Gray) },
-                maxLines = 5,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = AstralGold,
-                    unfocusedBorderColor = Void800,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
-                ),
-                shape = RoundedCornerShape(20.dp)
-            )
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            val contentResolver = context.contentResolver
+            val mimeType = contentResolver.getType(uri) ?: "application/octet-stream"
+            var fileName: String? = null
+            var fileSize: Long? = null
 
-            val canSend = text.isNotBlank() && !isSending
-            Box(
+            try {
+                contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                        if (nameIndex != -1) fileName = cursor.getString(nameIndex)
+                        if (sizeIndex != -1) fileSize = cursor.getLong(sizeIndex)
+                    }
+                }
+            } catch (e: Exception) {
+                // fallback
+            }
+
+            val type = when {
+                mimeType.startsWith("image/") -> "image"
+                mimeType.startsWith("video/") -> "video"
+                else -> "file"
+            }
+
+            selectedAttachment = SelectedAttachment(
+                url = uri.toString(),
+                type = type,
+                name = fileName ?: context.getString(R.string.thread_attachment_file_desc),
+                mime = mimeType,
+                size = fileSize
+            )
+        }
+    }
+
+    Surface(color = Void900) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            if (selectedAttachment != null) {
+                val att = selectedAttachment!!
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Void800)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = when (att.type) {
+                                "image" -> Icons.Filled.Image
+                                "video" -> Icons.Filled.PlayArrow
+                                else -> Icons.Filled.AttachFile
+                            },
+                            contentDescription = null,
+                            tint = AstralGold,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = att.name,
+                            color = Color.White,
+                            fontSize = 13.sp,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    }
+                    IconButton(
+                        onClick = { selectedAttachment = null },
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.thread_remove_attachment),
+                            tint = Color(0xFF94A3B8),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+            }
+
+            Row(
                 modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(if (canSend) AstralGold else Void800)
-                    .clickable(enabled = canSend) {
-                        onSend(text)
-                        text = ""
-                    },
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (isSending) {
-                    CircularProgressIndicator(color = Void950, modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
-                } else {
-                    Icon(
-                        Icons.AutoMirrored.Filled.Send,
-                        contentDescription = "Gönder",
-                        tint = if (canSend) Void950 else Color(0xFF64748B),
-                        modifier = Modifier.size(20.dp)
-                    )
+                Box {
+                    IconButton(
+                        onClick = { showOptionMenu = true },
+                        modifier = Modifier.size(44.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.AttachFile,
+                            contentDescription = stringResource(R.string.thread_add_media),
+                            tint = if (selectedAttachment != null) AstralGold else Color(0xFF94A3B8)
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showOptionMenu,
+                        onDismissRequest = { showOptionMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.thread_option_select_device)) },
+                            onClick = {
+                                showOptionMenu = false
+                                launcher.launch("*/*")
+                            },
+                            leadingIcon = { Icon(Icons.Filled.Image, contentDescription = null) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.thread_option_add_url)) },
+                            onClick = {
+                                showOptionMenu = false
+                                showUrlDialog = true
+                            },
+                            leadingIcon = { Icon(Icons.Filled.Link, contentDescription = null) }
+                        )
+                    }
+                }
+
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { if (it.length <= maxLen) text = it },
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text(stringResource(R.string.thread_input_placeholder), color = Color.Gray) },
+                    maxLines = 5,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AstralGold,
+                        unfocusedBorderColor = Void800,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(20.dp)
+                )
+
+                val canSend = (text.isNotBlank() || selectedAttachment != null) && !isSending
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .background(if (canSend) AstralGold else Void800)
+                        .clickable(enabled = canSend) {
+                            val att = selectedAttachment
+                            onSend(
+                                text.ifBlank { null },
+                                att?.url,
+                                att?.type,
+                                att?.name,
+                                att?.mime,
+                                att?.size
+                            )
+                            text = ""
+                            selectedAttachment = null
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isSending) {
+                        CircularProgressIndicator(color = Void950, modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                    } else {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Send,
+                            contentDescription = stringResource(R.string.thread_send_desc),
+                            tint = if (canSend) Void950 else Color(0xFF64748B),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
         }
+    }
+
+    if (showUrlDialog) {
+        var inputUrl by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showUrlDialog = false },
+            title = { Text(stringResource(R.string.thread_url_dialog_title)) },
+            text = {
+                OutlinedTextField(
+                    value = inputUrl,
+                    onValueChange = { inputUrl = it },
+                    label = { Text(stringResource(R.string.thread_url_dialog_label)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        if (inputUrl.isNotBlank()) {
+                            val trimmedUrl = inputUrl.trim()
+                            val type = when {
+                                trimmedUrl.endsWith(".jpg", true) || trimmedUrl.endsWith(".png", true) || trimmedUrl.endsWith(".webp", true) -> "image"
+                                trimmedUrl.endsWith(".mp4", true) || trimmedUrl.endsWith(".webm", true) -> "video"
+                                else -> "image"
+                            }
+                            selectedAttachment = SelectedAttachment(
+                                url = trimmedUrl,
+                                type = type,
+                                name = trimmedUrl.substringAfterLast("/").take(25),
+                                mime = null,
+                                size = null
+                            )
+                        }
+                        showUrlDialog = false
+                    }
+                ) {
+                    Text(stringResource(R.string.thread_add_btn), color = AstralGold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showUrlDialog = false }) {
+                    Text(stringResource(R.string.thread_cancel_btn))
+                }
+            }
+        )
     }
 }
 

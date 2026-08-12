@@ -1,4 +1,3 @@
-// PATH: app/src/main/java/io/lunosfer/dreamap/ui/screens/MessagesScreen.kt
 package io.lunosfer.dreamap.ui.screens
 
 import androidx.compose.foundation.BorderStroke
@@ -32,6 +31,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
+import androidx.compose.ui.res.stringResource
+import io.lunosfer.dreamap.R
 import io.lunosfer.dreamap.data.model.Conversation
 import io.lunosfer.dreamap.supabase.supabaseClient
 import io.lunosfer.dreamap.ui.theme.*
@@ -85,14 +86,14 @@ private fun MessagesNotLoggedIn(onLoginClick: () -> Unit) {
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            "Giriş Yapılması Gerekiyor",
+            stringResource(R.string.msg_login_required_title),
             color = Color.White,
             style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily),
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            "Mesajlarınızı ve sohbetlerinizi görebilmek için oturum açmanız gerekmektedir.",
+            stringResource(R.string.msg_login_required_desc),
             color = Color(0xFF94A3B8),
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center
@@ -103,7 +104,7 @@ private fun MessagesNotLoggedIn(onLoginClick: () -> Unit) {
             colors = ButtonDefaults.buttonColors(containerColor = AstralGold, contentColor = Void950),
             modifier = Modifier.fillMaxWidth(0.7f)
         ) {
-            Text("Giriş Yap", fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.msg_login_btn), fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -118,7 +119,7 @@ private fun MessagesError(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Mesajlar yüklenemedi", color = Color.White, style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily))
+        Text(stringResource(R.string.msg_load_failed), color = Color.White, style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily))
         Spacer(Modifier.height(8.dp))
         Text(message, color = Color(0xFF94A3B8), style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
         Spacer(Modifier.height(16.dp))
@@ -129,7 +130,7 @@ private fun MessagesError(
         ) {
             Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(8.dp))
-            Text("Tekrar Dene")
+            Text(stringResource(R.string.msg_retry))
         }
     }
 }
@@ -140,13 +141,13 @@ private fun ConversationsList(conversations: List<Conversation>, currentUserId: 
         Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    "Henüz bir konuşman yok",
+                    stringResource(R.string.msg_no_conversations_title),
                     color = Color.White,
                     style = MaterialTheme.typography.titleMedium.copy(fontFamily = SerifFontFamily)
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Bir arkadaşına mesaj gönderdiğinde burada görünecek.",
+                    stringResource(R.string.msg_no_conversations_desc),
                     color = Color(0xFF94A3B8),
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center
@@ -220,10 +221,10 @@ private fun ConversationRow(conversation: Conversation, currentUserId: String?, 
                 Text(
                     text = conversation.lastMessage.content
                         ?: when (conversation.lastMessage.attachmentType) {
-                            "image" -> "📷 Fotoğraf"
-                            "video" -> "🎥 Video"
-                            "file" -> "📎 Dosya"
-                            else -> if (conversation.lastMessage.attachmentType != null) "Ek gönderildi" else ""
+                            "image" -> stringResource(R.string.msg_attachment_photo)
+                            "video" -> stringResource(R.string.msg_attachment_video)
+                            "file" -> stringResource(R.string.msg_attachment_file)
+                            else -> if (conversation.lastMessage.attachmentType != null) stringResource(R.string.msg_attachment_generic) else ""
                         },
                     color = if (hasUnread) Color.White.copy(alpha = 0.85f) else Color(0xFF94A3B8),
                     fontSize = 12.sp,

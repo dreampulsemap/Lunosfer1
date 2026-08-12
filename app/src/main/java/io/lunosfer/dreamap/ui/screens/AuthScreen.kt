@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import io.lunosfer.dreamap.R
+import io.lunosfer.dreamap.service.LunosferMessagingService
 import io.lunosfer.dreamap.supabase.supabaseClient
 import io.lunosfer.dreamap.ui.theme.*
 import io.github.jan.supabase.auth.auth
@@ -155,7 +156,9 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
                                 
                                 val user = supabaseClient.auth.currentUserOrNull()
                                 if (user != null) {
-                                    val now = java.time.Instant.now().toString()
+                                    val now = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US).apply {
+                                        timeZone = java.util.TimeZone.getTimeZone("UTC")
+                                    }.format(java.util.Date())
                                     val profileData = mutableMapOf(
                                         "id" to user.id,
                                         "email" to (user.email ?: email),
@@ -192,6 +195,7 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
                                     Toast.makeText(context, context.getString(R.string.auth_success), Toast.LENGTH_LONG).show()
                                     isLogin = true
                                 } else {
+                                    LunosferMessagingService.registerCurrentFcmToken()
                                     onLoginSuccess()
                                 }
                             } catch (e: Exception) {
