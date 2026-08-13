@@ -29,6 +29,7 @@ data class ThreadUiState(
     val hasMoreOlder: Boolean = false,
     val isLoadingOlder: Boolean = false,
     val isSending: Boolean = false,
+    val isUploadingAttachment: Boolean = false,
     val sendError: String? = null
 )
 
@@ -98,24 +99,53 @@ class ThreadViewModel(
         }
     }
 
+    /**
+     * content: metin (opsiyonel). localUri: cihazdan seçilen, henüz
+     * yüklenmemiş bir dosya (varsa önce Storage'a yüklenir, gerçek URL'i
+     * elde edilir). directUrl: zaten hazır bir URL (örn. "Medya Bağlantısı
+     * Ekle" seçeneğiyle girilen link) — bu durumda upload adımı atlanır.
+     */
     fun sendMessage(
         content: String?,
-        attachmentUrl: String? = null,
+        localUri: android.net.Uri? = null,
+        directUrl: String? = null,
         attachmentType: String? = null,
         attachmentName: String? = null,
         attachmentMime: String? = null,
-        attachmentSize: Long? = null
+        attachmentSize: Long? = null,
+        appContext: android.content.Context? = null
     ) {
         val trimmed = content?.trim()
-        if ((trimmed == null || trimmed.isEmpty()) && attachmentUrl == null) return
-        if (_state.value.isSending) return
+        if ((trimmed == null || trimmed.isEmpty()) && localUri == null && directUrl == null) return
+        if (_state.value.isSending || _state.value.isUploadingAttachment) return
 
         _state.value = _state.value.copy(isSending = true, sendError = null)
         viewModelScope.launch {
+            val resolvedUrl: String? = if (localUri != null && appContext != null) {
+                _state.value = _state.value.copy(isUploadingAttachment = true)
+                val uploadResult = repository.uploadAttachment(
+                    context = appContext,
+                    uri = localUri,
+                    mimeType = attachmentMime ?: "application/octet-stream",
+                    fileName = attachmentName ?: "dosya"
+                )
+                _state.value = _state.value.copy(isUploadingAttachment = false)
+
+                uploadResult.getOrElse { error ->
+                    _state.value = _state.value.copy(
+                        isSending = false,
+                        sendError = "Dosya yüklenemedi: ${error.message ?: "bilinmeyen hata"}"
+                    )
+                    return@launch
+                }
+            } else {
+                directUrl
+            }
+
             repository.sendMessage(
                 recipientId = otherUserId,
                 content = if (trimmed.isNullOrEmpty()) null else trimmed,
-                attachmentUrl = attachmentUrl,
+                attachmentUrl = resolvedUrl,
                 attachmentType = attachmentType,
                 attachmentName = attachmentName,
                 attachmentMime = attachmentMime,
