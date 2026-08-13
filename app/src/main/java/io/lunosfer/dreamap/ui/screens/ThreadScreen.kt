@@ -78,7 +78,19 @@ fun ThreadScreen(otherUserId: String, navController: androidx.navigation.NavCont
         bottomBar = {
             ThreadInputBar(
                 isSending = state.isSending,
-                onSend = viewModel::sendMessage
+                isUploading = state.isUploadingAttachment,
+                onSend = { content, localUri, directUrl, attType, attName, attMime, attSize, appContext ->
+                    viewModel.sendMessage(
+                        content = content,
+                        localUri = localUri,
+                        directUrl = directUrl,
+                        attachmentType = attType,
+                        attachmentName = attName,
+                        attachmentMime = attMime,
+                        attachmentSize = attSize,
+                        appContext = appContext
+                    )
+                }
             )
         },
         containerColor = Void950
@@ -425,13 +437,25 @@ private data class SelectedAttachment(
     val type: String,
     val name: String,
     val mime: String?,
-    val size: Long?
+    val size: Long?,
+    /** true: url bir content:// URI'si (upload gerekir). false: url zaten hazır bir http(s) linki. */
+    val isLocalFile: Boolean
 )
 
 @Composable
 private fun ThreadInputBar(
     isSending: Boolean,
-    onSend: (content: String?, attachmentUrl: String?, attachmentType: String?, attachmentName: String?, attachmentMime: String?, attachmentSize: Long?) -> Unit
+    isUploading: Boolean,
+    onSend: (
+        content: String?,
+        localUri: Uri?,
+        directUrl: String?,
+        attachmentType: String?,
+        attachmentName: String?,
+        attachmentMime: String?,
+        attachmentSize: Long?,
+        appContext: android.content.Context
+    ) -> Unit
 ) {
     var text by remember { mutableStateOf("") }
     var selectedAttachment by remember { mutableStateOf<SelectedAttachment?>(null) }
@@ -473,7 +497,8 @@ private fun ThreadInputBar(
                 type = type,
                 name = fileName ?: context.getString(R.string.thread_attachment_file_desc),
                 mime = mimeType,
-                size = fileSize
+                size = fileSize,
+                isLocalFile = true
             )
         }
     }
@@ -584,7 +609,8 @@ private fun ThreadInputBar(
                     shape = RoundedCornerShape(20.dp)
                 )
 
-                val canSend = (text.isNotBlank() || selectedAttachment != null) && !isSending
+                val canSend = (text.isNotBlank() || selectedAttachment != null) && !isSending && !isUploading
+                val appContext = context.applicationContext
                 Box(
                     modifier = Modifier
                         .size(44.dp)
@@ -594,18 +620,20 @@ private fun ThreadInputBar(
                             val att = selectedAttachment
                             onSend(
                                 text.ifBlank { null },
-                                att?.url,
+                                if (att?.isLocalFile == true) Uri.parse(att.url) else null,
+                                if (att != null && att.isLocalFile == false) att.url else null,
                                 att?.type,
                                 att?.name,
                                 att?.mime,
-                                att?.size
+                                att?.size,
+                                appContext
                             )
                             text = ""
                             selectedAttachment = null
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    if (isSending) {
+                    if (isSending || isUploading) {
                         CircularProgressIndicator(color = Void950, modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
                     } else {
                         Icon(
@@ -649,7 +677,8 @@ private fun ThreadInputBar(
                                 type = type,
                                 name = trimmedUrl.substringAfterLast("/").take(25),
                                 mime = null,
-                                size = null
+                                size = null,
+                                isLocalFile = false
                             )
                         }
                         showUrlDialog = false
