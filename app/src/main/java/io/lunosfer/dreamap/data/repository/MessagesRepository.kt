@@ -1,6 +1,7 @@
 package io.lunosfer.dreamap.data.repository
 
 import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.storage.storage
 import io.lunosfer.dreamap.BuildConfig
 import io.lunosfer.dreamap.data.model.Conversation
 import io.lunosfer.dreamap.data.model.Message
@@ -10,9 +11,12 @@ import io.lunosfer.dreamap.data.network.NetworkModule
 import io.lunosfer.dreamap.supabase.supabaseClient
 import retrofit2.HttpException
 import java.util.Locale
+import java.util.UUID
 
 class MessagesRepository {
     private val api = NetworkModule.api
+
+    private val ATTACHMENT_BUCKET = "message-attachments"
 
     suspend fun loadConversations(): Result<List<Conversation>> = runCatching {
         api.getConversations().conversations
@@ -31,6 +35,34 @@ class MessagesRepository {
     /** "Daha eski mesajları yükle" — en eski görünen mesajın created_at'i before olarak verilir. */
     suspend fun loadOlderMessages(otherUserId: String, before: String): Result<ThreadResponse> = runCatching {
         api.getThread(otherUserId = otherUserId, before = before)
+    }
+
+    /**
+     * Cihazdan seçilen bir dosyayı (content:// URI) Supabase Storage'a
+     * yükler ve gerçek, public URL'i döner. Path deseni ({userId}/{uuid}-
+     * {orijinalAd}) mevcut veritabanındaki gerçek kayıtlardan doğrulandı;
+     * bu prefix send.js'deki isOwnAttachment kontrolünün beklediği
+     * desenle birebir aynı.
+     */
+    suspend fun uploadAttachment(
+        context: android.content.Context,
+        uri: android.net.Uri,
+        mimeType: String,
+        fileName: String
+    ): Result<String> = runCatching {
+        val userId = supabaseClient.auth.currentUserOrNull()?.id
+            ?: throw IllegalStateException("Yüklemek için giriş yapmış olmalısınız.")
+
+        val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+            ?: throw IllegalStateException("Dosya okunamadı.")
+
+        val storagePath = "$userId/${UUID.randomUUID()}-$fileName"
+
+        supabaseClient.storage.from(ATTACHMENT_BUCKET).upload(storagePath, bytes) {
+            upsert = false
+        }
+
+        supabaseClient.storage.from(ATTACHMENT_BUCKET).publicUrl(storagePath)
     }
 
     suspend fun sendMessage(
